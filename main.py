@@ -5,7 +5,7 @@ import jajali
 from PyQt5.QtCore import QTimer
 
 class MainClass(QDialog, jajali.Ui_MainWindow):
- 
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
