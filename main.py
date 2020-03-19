@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,QDialog,QLabel
-
+import sys
 import jajali
 from PyQt5.QtCore import QTimer
 
