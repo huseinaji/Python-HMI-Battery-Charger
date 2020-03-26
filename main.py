@@ -1,16 +1,33 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,QDialog,QLabel
 import sys
-import jajali
+import Interface
 from PyQt5.QtCore import QTimer
 
-class MainClass(QDialog, jajali.Ui_MainWindow):
+class MainClass(QDialog, Interface.Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.pushButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
+        self.pushButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(9))
         self.pushButton_2.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_3.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_4.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_5.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_6.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_7.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_8.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+        self.pushButton_9.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
+
+        self.toolButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
+        self.toolButton_2.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
+        self.toolButton_3.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
+        self.toolButton_4.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(4))
+        self.toolButton_5.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(5))
+        self.toolButton_6.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(6))
+        self.toolButton_7.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(7))
+        self.toolButton_8.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(8))
+
         #self.pushButton.clicked.connect(self.btnClickedEvent)
         #self.temp_1 = QLabel()
         #self.temp_1.linkActivated.connect(lambda: self.stackedWidget.setCurrentIndex(1))
@@ -54,6 +71,9 @@ class MainClass(QDialog, jajali.Ui_MainWindow):
         self.progressBar_2.setValue(a)
         self.progressBar.setPalette(self.l) if a <= 20 else self.progressBar.setPalette(self.p)
         self.progressBar_2.setPalette(self.l) if a <= 20 else self.progressBar_2.setPalette(self.p)
+        
+        self.bat_1_voltage.setText(str(self.dial.value()))
+        self.bat_1_temp.setText(str(self.dial.value()))
         self.voltage_1.setText(str(self.dial.value()))
         self.temp_1.setText(str(self.dial.value()))
         
