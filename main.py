@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication,QDialog,QLabel
 import sys
-import Interface
+import interface
 from PyQt5.QtCore import QTimer
 
-class MainClass(QDialog, Interface.Ui_MainWindow):
+class MainClass(QDialog, interface.Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
