@@ -9,7 +9,6 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.pushButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(9))
         self.pushButton_2.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_3.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_4.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
@@ -74,6 +73,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         
         self.bat_1_voltage.setText(str(self.dial.value()))
         self.bat_1_temp.setText(str(self.dial.value()))
+        self.bat_1_current.setText(str(self.dial.value()))
         self.voltage_1.setText(str(self.dial.value()))
         self.temp_1.setText(str(self.dial.value()))
         
