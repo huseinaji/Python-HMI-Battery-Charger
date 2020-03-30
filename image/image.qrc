@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>GEN.png</file>
+    <file>GEN2.png</file>
+  </qresource>
+</RCC>

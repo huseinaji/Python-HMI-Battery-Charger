@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>929</width>
-    <height>632</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>911</width>
-      <height>571</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1261</width>
+      <height>681</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -30,10 +30,10 @@
      <widget class="QGroupBox" name="groupBox">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>30</x>
         <y>10</y>
-        <width>871</width>
-        <height>451</height>
+        <width>1221</width>
+        <height>661</height>
        </rect>
       </property>
       <property name="palette">
@@ -102,9 +102,9 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
+        <pointsize>17</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
        </font>
       </property>
       <property name="contextMenuPolicy">
@@ -125,10 +125,10 @@
       <widget class="QProgressBar" name="progressBar_3">
        <property name="geometry">
         <rect>
-         <x>450</x>
-         <y>80</y>
-         <width>81</width>
-         <height>141</height>
+         <x>630</x>
+         <y>170</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -171,6 +171,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="mouseTracking">
@@ -198,10 +200,10 @@
       <widget class="QProgressBar" name="progressBar_2">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>80</y>
-         <width>81</width>
-         <height>141</height>
+         <x>330</x>
+         <y>170</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -244,6 +246,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -265,10 +269,10 @@
       <widget class="QProgressBar" name="progressBar">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>81</width>
-         <height>141</height>
+         <x>30</x>
+         <y>170</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -311,6 +315,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
          <stylestrategy>PreferDefault</stylestrategy>
          <kerning>true</kerning>
         </font>
@@ -349,10 +355,10 @@
       <widget class="QProgressBar" name="progressBar_4">
        <property name="geometry">
         <rect>
-         <x>660</x>
-         <y>80</y>
-         <width>81</width>
-         <height>141</height>
+         <x>930</x>
+         <y>170</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -395,6 +401,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -419,10 +427,10 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>280</y>
-         <width>81</width>
-         <height>141</height>
+         <x>30</x>
+         <y>430</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -465,6 +473,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -495,10 +505,10 @@
       <widget class="QProgressBar" name="progressBar_6">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>280</y>
-         <width>81</width>
-         <height>141</height>
+         <x>330</x>
+         <y>430</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -541,6 +551,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -565,10 +577,10 @@
       <widget class="QProgressBar" name="progressBar_7">
        <property name="geometry">
         <rect>
-         <x>450</x>
-         <y>280</y>
-         <width>81</width>
-         <height>141</height>
+         <x>630</x>
+         <y>430</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -611,6 +623,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -632,10 +646,10 @@
       <widget class="QProgressBar" name="progressBar_8">
        <property name="geometry">
         <rect>
-         <x>660</x>
-         <y>280</y>
-         <width>81</width>
-         <height>141</height>
+         <x>930</x>
+         <y>430</y>
+         <width>111</width>
+         <height>171</height>
         </rect>
        </property>
        <property name="palette">
@@ -678,6 +692,8 @@
        <property name="font">
         <font>
          <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="layoutDirection">
@@ -699,15 +715,17 @@
       <widget class="QGroupBox" name="groupBox_8">
        <property name="geometry">
         <rect>
-         <x>540</x>
-         <y>280</y>
-         <width>111</width>
-         <height>121</height>
+         <x>750</x>
+         <y>430</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -722,6 +740,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -734,6 +759,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -748,6 +780,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -761,6 +800,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -768,7 +814,7 @@
        <widget class="QToolButton" name="toolButton_7">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -782,15 +828,17 @@
       <widget class="QGroupBox" name="groupBox_5">
        <property name="geometry">
         <rect>
-         <x>750</x>
-         <y>80</y>
-         <width>111</width>
-         <height>121</height>
+         <x>1050</x>
+         <y>170</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -805,6 +853,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -817,6 +872,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -831,6 +893,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -844,6 +913,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -851,7 +927,7 @@
        <widget class="QToolButton" name="toolButton_4">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -865,15 +941,17 @@
       <widget class="QGroupBox" name="groupBox_2">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>80</y>
-         <width>111</width>
-         <height>121</height>
+         <x>150</x>
+         <y>170</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -888,6 +966,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -900,6 +985,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -914,6 +1006,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -927,6 +1026,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0</string>
         </property>
@@ -934,7 +1040,7 @@
        <widget class="QToolButton" name="toolButton">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -948,15 +1054,17 @@
       <widget class="QGroupBox" name="groupBox_4">
        <property name="geometry">
         <rect>
-         <x>540</x>
-         <y>80</y>
-         <width>111</width>
-         <height>121</height>
+         <x>750</x>
+         <y>170</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -971,6 +1079,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -983,6 +1098,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -997,6 +1119,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -1010,6 +1139,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -1017,7 +1153,7 @@
        <widget class="QToolButton" name="toolButton_3">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -1031,15 +1167,18 @@
       <widget class="QGroupBox" name="groupBox_9">
        <property name="geometry">
         <rect>
-         <x>750</x>
-         <y>280</y>
-         <width>111</width>
-         <height>121</height>
+         <x>1050</x>
+         <y>430</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -1054,6 +1193,14 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -1066,6 +1213,15 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+          <kerning>true</kerning>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -1080,6 +1236,14 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -1093,6 +1257,14 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -1100,7 +1272,7 @@
        <widget class="QToolButton" name="toolButton_8">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -1114,15 +1286,17 @@
       <widget class="QGroupBox" name="groupBox_7">
        <property name="geometry">
         <rect>
-         <x>320</x>
-         <y>280</y>
-         <width>111</width>
-         <height>121</height>
+         <x>450</x>
+         <y>430</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -1137,6 +1311,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -1149,6 +1330,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -1163,6 +1351,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -1176,6 +1371,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -1183,7 +1385,7 @@
        <widget class="QToolButton" name="toolButton_6">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -1197,15 +1399,17 @@
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
-         <x>320</x>
-         <y>80</y>
-         <width>111</width>
-         <height>121</height>
+         <x>450</x>
+         <y>170</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -1220,6 +1424,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -1232,6 +1443,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -1246,6 +1464,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -1259,6 +1484,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -1266,7 +1498,7 @@
        <widget class="QToolButton" name="toolButton_2">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -1280,15 +1512,17 @@
       <widget class="QGroupBox" name="groupBox_6">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>280</y>
-         <width>111</width>
-         <height>121</height>
+         <x>150</x>
+         <y>430</y>
+         <width>141</width>
+         <height>151</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="title">
@@ -1303,6 +1537,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 V</string>
         </property>
@@ -1315,6 +1556,13 @@
           <width>111</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="text">
          <string>Temperature </string>
@@ -1329,6 +1577,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Voltage </string>
         </property>
@@ -1342,6 +1597,13 @@
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
          <string>0 </string>
         </property>
@@ -1349,7 +1611,7 @@
        <widget class="QToolButton" name="toolButton_5">
         <property name="geometry">
          <rect>
-          <x>80</x>
+          <x>100</x>
           <y>0</y>
           <width>24</width>
           <height>25</height>
@@ -1363,26 +1625,39 @@
       <widget class="Line" name="line">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>240</y>
-         <width>851</width>
-         <height>16</height>
+         <x>30</x>
+         <y>370</y>
+         <width>1161</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
-     </widget>
-     <widget class="QDial" name="dial">
-      <property name="geometry">
-       <rect>
-        <x>770</x>
-        <y>480</y>
-        <width>81</width>
-        <height>81</height>
-       </rect>
-      </property>
+      <widget class="QDial" name="dial">
+       <property name="geometry">
+        <rect>
+         <x>1060</x>
+         <y>50</y>
+         <width>81</width>
+         <height>81</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>40</y>
+         <width>161</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/newPrefix/GEN2.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="page_2">
@@ -9400,13 +9675,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>929</width>
+     <width>1280</width>
      <height>22</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="image/image.qrc"/>
+ </resources>
  <connections/>
 </ui>

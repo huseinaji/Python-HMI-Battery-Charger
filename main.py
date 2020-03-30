@@ -89,5 +89,5 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 if __name__ == "__main__":
     window = QApplication(sys.argv)
     ui = MainClass()
-    ui.show()
+    ui.showFullScreen()
     window.exec_()
