@@ -8,6 +8,9 @@ Download VNC viewer and install it
 * https://www.realvnc.com/en/connect/download/viewer/linux/
 
 ### Standard Procedure and Debugging
+inserting image to QT
+* https://stackoverflow.com/questions/28536306/inserting-an-image-in-gui-using-qt-designer
+
 Convert Qt5 Designer output from .ui (QTCreator output) to .py 
 
 write on command line:
