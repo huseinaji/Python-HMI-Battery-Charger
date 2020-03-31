@@ -8,13 +8,17 @@ Download VNC viewer and install it
 * https://www.realvnc.com/en/connect/download/viewer/linux/
 
 ### Standard Procedure and Debugging
-Convert Qt5 Designer output from .ui (QTCreator output) to .py
+Convert Qt5 Designer output from .ui (QTCreator output) to .py 
 
 write on command line:
 ```
 apt-get install pyqt5-dev-tools
 
 pyuic5 -x "name".ui -o "output name".py
+```
+for .qrc file:
+```
+pyrcc5 "name".qrc -o "output name".py
 ```
 
 ### Install python3 program dependencies:
