@@ -1,5 +1,28 @@
 # Python-HMI-Battery-Charger
-Using Qt5 Designer 
+## Raspberry Pi Preparation
+### Headless Raspberry Configuration
+Follow this instruction for wifi connection setting
+* https://raspberrypi.stackexchange.com/questions/10251/prepare-sd-card-for-wifi-on-headless-pi
+
+Download VNC viewer and install it
+* https://www.realvnc.com/en/connect/download/viewer/linux/
+
+### Standard Procedure and Debugging
+inserting image to QT
+* https://stackoverflow.com/questions/28536306/inserting-an-image-in-gui-using-qt-designer
+
+Convert Qt5 Designer output from .ui (QTCreator output) to .py 
+
+write on command line:
+```
+apt-get install pyqt5-dev-tools
+
+pyuic5 -x "name".ui -o "output name".py
+```
+for .qrc file:
+```
+pyrcc5 "name".qrc -o "output name".py
+```
 
 ### Install python3 program dependencies:
 ```
@@ -8,14 +31,6 @@ sudo apt-get install python3-pip
 sudo apt-get install DateTime
 sudo apt-get install RPi.GPIO
 sudo apt-get install python-can
-```
-Convert Qt5 Designer output from .ui to .py
-
-write on command line:
-```
-apt-get install pyqt5-dev-tools
-
-pyuic5 -x "name".ui -o "output name".py
 ```
 ### CANbus Host Configuration
 Follow This instruction for installing PCAN Driver :
