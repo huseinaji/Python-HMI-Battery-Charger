@@ -8,6 +8,13 @@ Download VNC viewer and install it
 * https://www.realvnc.com/en/connect/download/viewer/linux/
 
 ### Standard Procedure and Debugging
+Run Program on Raspberry Pi:
+
+(if the color didn't change on Raspbian, use "sudo")
+```
+Python3 main.py 
+```
+
 inserting image to QT
 * https://stackoverflow.com/questions/28536306/inserting-an-image-in-gui-using-qt-designer
 
