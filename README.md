@@ -46,6 +46,5 @@ Follow This instruction for installing PCAN Driver :
 Use this tools for send/receive CAN data :
 * sudo apt-get install can-utils
 * https://github.com/linux-can/can-utils
-
-Installing Python-Can for Raspberry Pi
- http://skpang.co.uk/blog/archives/1220
+* https://python-can.readthedocs.io/en/master/installation.html
+* http://skpang.co.uk/blog/archives/1220
