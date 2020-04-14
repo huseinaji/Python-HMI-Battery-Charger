@@ -8,6 +8,13 @@ Download VNC viewer and install it
 * https://www.realvnc.com/en/connect/download/viewer/linux/
 
 ### Standard Procedure and Debugging
+Run Program on Raspberry Pi:
+
+(if the color didn't change on Raspbian, use "sudo")
+```
+Python3 main.py 
+```
+
 inserting image to QT
 * https://stackoverflow.com/questions/28536306/inserting-an-image-in-gui-using-qt-designer
 
@@ -39,6 +46,5 @@ Follow This instruction for installing PCAN Driver :
 Use this tools for send/receive CAN data :
 * sudo apt-get install can-utils
 * https://github.com/linux-can/can-utils
-
-Installing Python-Can for Raspberry Pi
- http://skpang.co.uk/blog/archives/1220
+* https://python-can.readthedocs.io/en/master/installation.html
+* http://skpang.co.uk/blog/archives/1220
