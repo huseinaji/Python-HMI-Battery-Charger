@@ -48,3 +48,12 @@ Use this tools for send/receive CAN data :
 * https://github.com/linux-can/can-utils
 * https://python-can.readthedocs.io/en/master/installation.html
 * http://skpang.co.uk/blog/archives/1220
+
+if there is some error occure while trying REAL hardware:
+```
+cannot find device can0
+```
+follow this instruction
+* https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=155651&p=1023355#p1023355
+
+on the "/boot/config.txt" just remove "-overlays"
