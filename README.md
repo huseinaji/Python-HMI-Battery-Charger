@@ -40,8 +40,11 @@ sudo apt-get install RPi.GPIO
 sudo apt-get install python-can
 ```
 ### CANbus Host Configuration
-Follow This instruction for installing PCAN Driver :
+Follow This instruction for installing PCAN Driver (PC) :
 * https://github.com/SICKAG/sick_line_guidance/blob/master/doc/pcan-linux-installation.md
+
+For Raspberry Pi:
+* https://forum.peak-system.com/viewtopic.php?t=283&start=90
 
 Use this tools for send/receive CAN data :
 * sudo apt-get install can-utils
