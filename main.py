@@ -77,15 +77,6 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.voltage_1.setText(str(self.dial.value()))
         self.temp_1.setText(str(self.dial.value()))
         
-    '''    
-    def handleTimer(self):
-        value = self.progressBar.value()
-        if value < 100:
-            value = value + 1
-            self.progressBar.setValue(value)
-        else:
-            self.timer.stop()
-	'''
 if __name__ == "__main__":
     window = QApplication(sys.argv)
     ui = MainClass()
