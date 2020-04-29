@@ -38,6 +38,7 @@ sudo apt-get install python3-pip
 sudo apt-get install DateTime
 sudo apt-get install RPi.GPIO
 sudo apt-get install python-can
+sudo apt-get install can-utils
 ```
 ### CANbus Host Configuration
 Follow This instruction for installing PCAN Driver (PC) :
@@ -46,13 +47,8 @@ Follow This instruction for installing PCAN Driver (PC) :
 For Raspberry Pi:
 * https://forum.peak-system.com/viewtopic.php?t=3381
 
-Use this tools for send/receive CAN data :
-* sudo apt-get install can-utils
-* https://github.com/linux-can/can-utils
-* https://python-can.readthedocs.io/en/master/installation.html
-* http://skpang.co.uk/blog/archives/1220
-
-if there is some error occure while trying REAL hardware:
+### Error and Debugging
+if there is some error occure while trying mcp2515 canbus module:
 ```
 cannot find device can0
 ```
@@ -60,3 +56,8 @@ follow this instruction
 * https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=155651&p=1023355#p1023355
 
 on the "/boot/config.txt" just remove "-overlays"
+
+the oscillator must set to be 8000000 (same as the crystal module)
+the mcp2515 chip need 3.3v but TJA1050 need 5V supply (follow below instruction)
+* https://vimtut0r.com/2017/01/17/can-bus-with-raspberry-pi-howtoquickstart-mcp2515-kernel-4-4-x/
+
