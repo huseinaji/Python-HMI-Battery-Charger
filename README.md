@@ -74,11 +74,13 @@ follow this instruction
 
 on the "/boot/config.txt" just remove "-overlays"
 
-the oscillator must set to be 8000000 (same as the crystal module)
+#### MCP2515 modul cannot send or receive any message
 
-interrupt pin need to set as GPIO pin
+* the oscillator must set to be 8000000, not 16000000 (same as the crystal module) --> and this happened to me :((
 
-the mcp2515 chip need 3.3v but TJA1050 need 5V supply. Cut and devide the wire to get 5V source (follow below instruction)
+* interrupt pin need to set as GPIO pin
+
+* the mcp2515 chip need 3.3v but TJA1050 need 5V supply. Cut and devide the wire to get 5V source (follow below instruction)
 
 * https://vimtut0r.com/2017/01/17/can-bus-with-raspberry-pi-howtoquickstart-mcp2515-kernel-4-4-x/
 
