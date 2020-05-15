@@ -44,8 +44,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.progressBar_6.setMaximum(99)
         self.progressBar_7.setMaximum(99)
         self.progressBar_8.setMaximum(99)
-        
-		
+
         self.l = QtGui.QPalette(self.palette())
         self.l.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.red))
         self.dial.valueChanged.connect(self.dialValue)

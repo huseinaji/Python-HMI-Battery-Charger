@@ -1,6 +1,7 @@
 import can
 import time
 import os
+import threading 
 
 BITRATE = 500000
 CHANNEL = 'can0'
@@ -15,7 +16,6 @@ except:
     print("Canbus initiating failed")
     SystemExit()
 
-
 def frameparse(frame, type):
     hexformat = "{:x}"
     bolformat = "{:08b}"
@@ -27,7 +27,7 @@ def frameparse(frame, type):
 
     elif type == "bat_current":
         x = "".join(hexformat.format(frame.data[i])for i in range (2,4))
-        formatted_data = int(x, 16) 
+        formatted_data = int(x, 16)
         return formatted_data / 100 - 50
 
     elif type == "bat_soc":
@@ -90,7 +90,7 @@ while True:
             Discharge_State = frameparse(msg, "status")[13]
             Sleep_State = frameparse(msg, "status")[14]
 
-        if i == 1: print(bat_capacity)
+        if i == 0: print(bat_voltage)
 
         i += 1       
         if i > 5 : i = 0
