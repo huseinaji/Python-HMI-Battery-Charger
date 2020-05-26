@@ -12,13 +12,13 @@ Run Program on Raspberry Pi:
 
 (if the color didn't change on Raspbian, use "sudo")
 ```
-Python3 main.py 
+Python3 main.py
 ```
 
 inserting image to QT
 * https://stackoverflow.com/questions/28536306/inserting-an-image-in-gui-using-qt-designer
 
-Convert Qt5 Designer output from .ui (QTCreator output) to .py 
+Convert Qt5 Designer output from .ui (QTCreator output) to .py
 
 write on command line:
 ```
@@ -84,3 +84,13 @@ on the "/boot/config.txt" just remove "-overlays"
 
 * https://vimtut0r.com/2017/01/17/can-bus-with-raspberry-pi-howtoquickstart-mcp2515-kernel-4-4-x/
 
+## MQTT configuration
+### Installation
+clone paho-mqtt from github:
+* sudo git clone https://github.com/eclipse/paho.mqtt.python
+
+get in to the directory paho-mqtt then,
+* python3 setup.py install
+
+if there is some error occured, try this
+* pip3 install paho-mqtt python-etcd
