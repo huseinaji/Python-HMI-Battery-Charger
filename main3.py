@@ -3,12 +3,21 @@ from PyQt5.QtWidgets import QApplication,QDialog,QLabel
 import sys
 import interface
 from PyQt5.QtCore import QTimer
+import paho.mqtt.client as mqtt
+import json
 import can
 import time
 import os
 
 BITRATE = 500000
 CHANNEL = "can0"
+A = 60
+B = 55.1
+C = "iso cuyy"
+MQTT_HOST = "broker.hivemq.com"
+MQTT_PORT = 1883
+MQTT_KEEPALIVE_INTERVAL = 60
+MQTT_TOPIC = "mqtt/subscribe"
 
 class MainClass(QDialog, interface.Ui_MainWindow):
     BAT_1_VOLTAGE = QtCore.pyqtSignal(str)
@@ -541,8 +550,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     def bat_1_sleep_state_handle(self, value):
         self.bat_1_sleep_state.setText(value)
         QtWidgets.QApplication.processEvents()
-
-    
+ 
     def bat_2_voltage_handle(self, value):       
         self.bat_2_voltage.setText(value)   
         self.voltage_2.setText(value)       
@@ -1040,18 +1048,10 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_8_sleep_state.setText(value)
         QtWidgets.QApplication.processEvents()
 
-    def button_connect_handle(self):
-        try:
-            os.system("sudo ip link set {} up type can bitrate {}".format(CHANNEL, BITRATE))
-            self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
-            self.status_connect.setText("Canbus initiating sucess")
-            
-            self.button_disconnect.setEnabled(True)
-            self.button_connect.setEnabled(False)
-        except:
-            self.status_connect.setText("Canbus initiating failed")
-            SystemExit()
-
+    def mqtt_connect(self, client, userdata, flags, rc):
+        self.status_connect.setText("Connected with result code " + str(rc))
+        print("Connected with result code " + str(rc))
+    
     def button_disconnect_handle(self):
         try: 
             os.system("sudo ip link set {} down".format(CHANNEL))
@@ -1071,7 +1071,63 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             
             while True:
                 self.msg = self.bus.recv() 
-                
+
+                self.buff = {
+                    "bat_1_voltage" : self.bat_1_voltage,
+                    "bat_1_current" : self.bat_1_current,
+                    "bat_1_soc" : self.bat_1_soc,
+                    "bat_1_temp" : self.bat_1_temp,
+                    "bat_1_capacity" : self.bat_1_capacity,
+                    "bat_1_soh" : self.bat_1_soh,
+                    "bat_1_cycle" : self.bat_1_cycle,
+                    "bat_1_discharge_over_current" : self.bat_1_discharge_over_current,
+                    "bat_1_charge_over_current" : self.bat_1_charge_over_current,
+                    "bat_1_short_circuit" : self.bat_1_short_circuit,
+                    "bat_1_discharge_over_temp" : self.bat_1_discharge_over_temp,
+                    "bat_1_discharge_under_temp" : self.bat_1_discharge_under_temp,
+                    "bat_1_charge_over_temp" : self.bat_1_charge_over_temp,
+                    "bat_1_charge_under_temp" : self.bat_1_charge_under_temp,
+                    "bat_1_under_voltage" : self.bat_1_under_voltage,
+                    "bat_1_over_voltage" : self.bat_1_over_voltage,
+                    "bat_1_over_discharge_capacity" : self.bat_1_over_discharge_capacity,
+                    "bat_1_imbalance" : self.bat_1_imbalance,
+                    "bat_1_system_failure" : self.bat_1_system_failure,
+                    "bat_1_charger_state" : self.bat_1_charger_state,
+                    "bat_1_discharge_state" : self.bat_1_discharge_state,
+                    "bat_1_sleep_state" : self.bat_1_sleep_state,
+
+                    "bat_2_voltage" : self.bat_2_voltage,
+                    "bat_2_current" : self.bat_2_current,
+                    "bat_2_soc" : self.bat_2_soc,
+                    "bat_2_temp" : self.bat_2_temp,
+                    "bat_2_capacity" : self.bat_2_capacity,
+                    "bat_2_soh" : self.bat_2_soh,
+                    "bat_2_cycle" : self.bat_2_cycle,
+                    "bat_2_discharge_over_current" : self.bat_2_discharge_over_current,
+                    "bat_2_charge_over_current" : self.bat_2_charge_over_current,
+                    "bat_2_short_circuit" : self.bat_2_short_circuit,
+                    "bat_2_discharge_over_temp" : self.bat_2_discharge_over_temp,
+                    "bat_2_discharge_under_temp" : self.bat_2_discharge_under_temp,
+                    "bat_2_charge_over_temp" : self.bat_2_charge_over_temp,
+                    "bat_2_charge_under_temp" : self.bat_2_charge_under_temp,
+                    "bat_2_under_voltage" : self.bat_2_under_voltage,
+                    "bat_2_over_voltage" : self.bat_2_over_voltage,
+                    "bat_2_over_discharge_capacity" : self.bat_2_over_discharge_capacity,
+                    "bat_2_imbalance" : self.bat_2_imbalance,
+                    "bat_2_system_failure" : self.bat_2_system_failure,
+                    "bat_2_charger_state" : self.bat_2_charger_state,
+                    "bat_2_discharge_state" : self.bat_2_discharge_state,
+                    "bat_2_sleep_state" : self.bat_2_sleep_state
+                }
+                self.brokers_out = json.dumps(self.buff)
+                self.client = mqtt.Client()
+                self.client.reinitialise(client_id="clientidmqtt", clean_session=True, userdata=None)
+                self.client.on_connect = self.on_connect
+                self.client.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+                self.client.publish(MQTT_TOPIC, self.brokers_out)
+                self.client.subscribe(MQTT_TOPIC)
+                self.client.loop_forever()
+
                 ## THE ARBITRATION_ID MAY CHANGE WHEN TRYING ON REAL BMS
                 if self.msg.arbitration_id == 0xB0FFFFF:
                     self.BAT_1_VOLTAGE.emit(str(frameparse(self.msg, "bat_voltage")))

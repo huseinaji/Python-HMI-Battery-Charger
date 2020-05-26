@@ -31,7 +31,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QGroupBox" name="groupBox">
@@ -768,7 +768,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -808,7 +808,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -861,7 +861,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -921,7 +921,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -961,7 +961,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1014,7 +1014,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -1227,7 +1227,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -1267,7 +1267,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1320,7 +1320,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -1382,7 +1382,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -1425,7 +1425,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1479,7 +1479,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -1539,7 +1539,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -1579,7 +1579,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1632,7 +1632,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -1692,7 +1692,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -1732,7 +1732,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1785,7 +1785,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>
@@ -1845,7 +1845,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -1885,7 +1885,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>41</width>
           <height>17</height>
          </rect>
@@ -1938,7 +1938,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>100</y>
+          <y>110</y>
           <width>21</width>
           <height>17</height>
          </rect>

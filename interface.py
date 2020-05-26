@@ -769,7 +769,7 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setWeight(50)
         self.button_connect.setFont(font)
-        self.button_connect.setTabletTracking(False)
+       # self.button_connect.setTabletTracking(False)
         self.button_connect.setInputMethodHints(QtCore.Qt.ImhNone)
         self.button_connect.setCheckable(False)
         self.button_connect.setDefault(False)
