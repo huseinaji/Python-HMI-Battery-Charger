@@ -1985,9 +1985,9 @@
        <property name="geometry">
         <rect>
          <x>790</x>
-         <y>50</y>
+         <y>40</y>
          <width>321</width>
-         <height>121</height>
+         <height>161</height>
         </rect>
        </property>
        <property name="font">
@@ -2080,8 +2080,46 @@
           <x>120</x>
           <y>40</y>
           <width>190</width>
-          <height>71</height>
+          <height>111</height>
          </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="button_send_data">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>110</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="tabletTracking">
+         <bool>false</bool>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::ImhNone</set>
+        </property>
+        <property name="text">
+         <string>Data Send</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </widget>
