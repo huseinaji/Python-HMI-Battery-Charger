@@ -800,7 +800,7 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setWeight(50)
         self.button_send_data.setFont(font)
-        self.button_send_data.setTabletTracking(False)
+        #self.button_send_data.setTabletTracking(False)
         self.button_send_data.setInputMethodHints(QtCore.Qt.ImhNone)
         self.button_send_data.setCheckable(False)
         self.button_send_data.setDefault(False)
