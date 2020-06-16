@@ -420,6 +420,8 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 
         self.button_connect.clicked.connect(self.canConnect)
         self.button_disconnect.clicked.connect(self.button_disconnect_handle)
+        #self.button_send_data.clicked.connect(self.button_send_data_handle)
+
         self.pushButton_2.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_3.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_4.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
@@ -1060,6 +1062,213 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.button_disconnect.setEnabled(False)
         except:
             self.status_connect.setText("Canbus disconnecting failed")
+    '''
+    def button_send_data_handle(self):                  #try to send data to server
+        try:
+            self.client = mqtt.Client()
+            self.client.reinitialise(client_id="clientidmqtt", clean_session=True, userdata=None)
+            self.client.on_connect = self.mqtt_connect
+            self.client.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+            self.status_connect.setText("send data begin")
+
+            while True:
+                self.msg = self.bus.recv() 
+
+                self.buff = {
+                    "bat_1_voltage" : self.bat_1_voltage.text(),
+                    "bat_1_current" : self.bat_1_current.text(),
+                    "bat_1_soc" : self.bat_1_soc.text(),
+                    "bat_1_temp" : self.bat_1_temp.text(),
+                    "bat_1_capacity" : self.bat_1_capacity.text(),
+                    "bat_1_soh" : self.bat_1_soh.text(),
+                    "bat_1_cycle" : self.bat_1_cycle.text(),
+                    "bat_1_discharge_over_current" : self.bat_1_discharge_over_current.text(),
+                    "bat_1_charge_over_current" : self.bat_1_charge_over_current.text(),
+                    "bat_1_short_circuit" : self.bat_1_short_circuit.text(),
+                    "bat_1_discharge_over_temp" : self.bat_1_discharge_over_temp.text(),
+                    "bat_1_discharge_under_temp" : self.bat_1_discharge_under_temp.text(),
+                    "bat_1_charge_over_temp" : self.bat_1_charge_over_temp.text(),
+                    "bat_1_charge_under_temp" : self.bat_1_charge_under_temp.text(),
+                    "bat_1_under_voltage" : self.bat_1_under_voltage.text(),
+                    "bat_1_over_voltage" : self.bat_1_over_voltage.text(),
+                    "bat_1_over_discharge_capacity" : self.bat_1_over_discharge_capacity.text(),
+                    "bat_1_imbalance" : self.bat_1_imbalance.text(),
+                    "bat_1_system_failure" : self.bat_1_system_failure.text(),
+                    "bat_1_charger_state" : self.bat_1_charger_state.text(),
+                    "bat_1_discharge_state" : self.bat_1_discharge_state.text(),
+                    "bat_1_sleep_state" : self.bat_1_sleep_state.text(),
+                
+                    "bat_2_voltage" : self.bat_2_voltage.text(),
+                    "bat_2_current" : self.bat_2_current.text(),
+                    "bat_2_soc" : self.bat_2_soc.text(),
+                    "bat_2_temp" : self.bat_2_temp.text(),
+                    "bat_2_capacity" : self.bat_2_capacity.text(),
+                    "bat_2_soh" : self.bat_2_soh.text(),
+                    "bat_2_cycle" : self.bat_2_cycle.text(),
+                    "bat_2_discharge_over_current" : self.bat_2_discharge_over_current.text(),
+                    "bat_2_charge_over_current" : self.bat_2_charge_over_current.text(),
+                    "bat_2_short_circuit" : self.bat_2_short_circuit.text(),
+                    "bat_2_discharge_over_temp" : self.bat_2_discharge_over_temp.text(),
+                    "bat_2_discharge_under_temp" : self.bat_2_discharge_under_temp.text(),
+                    "bat_2_charge_over_temp" : self.bat_2_charge_over_temp.text(),
+                    "bat_2_charge_under_temp" : self.bat_2_charge_under_temp.text(),
+                    "bat_2_under_voltage" : self.bat_2_under_voltage.text(),
+                    "bat_2_over_voltage" : self.bat_2_over_voltage.text(),
+                    "bat_2_over_discharge_capacity" : self.bat_2_over_discharge_capacity.text(),
+                    "bat_2_imbalance" : self.bat_2_imbalance.text(),
+                    "bat_2_system_failure" : self.bat_2_system_failure.text(),
+                    "bat_2_charger_state" : self.bat_2_charger_state.text(),
+                    "bat_2_discharge_state" : self.bat_2_discharge_state.text(),
+                    "bat_2_sleep_state" : self.bat_2_sleep_state.text()
+                }
+
+                time.sleep(1)
+                
+                    "bat_3_voltage" : self.bat_3_voltage.text(),
+                    "bat_3_current" : self.bat_3_current.text(),
+                    "bat_3_soc" : self.bat_3_soc.text(),
+                    "bat_3_temp" : self.bat_3_temp.text(),
+                    "bat_3_capacity" : self.bat_3_capacity.text(),
+                    "bat_3_soh" : self.bat_3_soh.text(),
+                    "bat_3_cycle" : self.bat_3_cycle.text(),
+                    "bat_3_discharge_over_current" : self.bat_3_discharge_over_current.text(),
+                    "bat_3_charge_over_current" : self.bat_3_charge_over_current.text(),
+                    "bat_3_short_circuit" : self.bat_3_short_circuit.text(),
+                    "bat_3_discharge_over_temp" : self.bat_3_discharge_over_temp.text(),
+                    "bat_3_discharge_under_temp" : self.bat_3_discharge_under_temp.text(),
+                    "bat_3_charge_over_temp" : self.bat_3_charge_over_temp.text(),
+                    "bat_3_charge_under_temp" : self.bat_3_charge_under_temp.text(),
+                    "bat_3_under_voltage" : self.bat_3_under_voltage.text(),
+                    "bat_3_over_voltage" : self.bat_3_over_voltage.text(),
+                    "bat_3_over_discharge_capacity" : self.bat_3_over_discharge_capacity.text(),
+                    "bat_3_imbalance" : self.bat_3_imbalance.text(),
+                    "bat_3_system_failure" : self.bat_3_system_failure.text(),
+                    "bat_3_charger_state" : self.bat_3_charger_state.text(),
+                    "bat_3_discharge_state" : self.bat_3_discharge_state.text(),
+                    "bat_3_sleep_state" : self.bat_3_sleep_state.text()
+
+                    "bat_4_voltage" : self.bat_4_voltage.text(),
+                    "bat_4_current" : self.bat_4_current.text(),
+                    "bat_4_soc" : self.bat_4_soc.text(),
+                    "bat_4_temp" : self.bat_4_temp.text(),
+                    "bat_4_capacity" : self.bat_4_capacity.text(),
+                    "bat_4_soh" : self.bat_4_soh.text(),
+                    "bat_4_cycle" : self.bat_4_cycle.text(),
+                    "bat_4_discharge_over_current" : self.bat_4_discharge_over_current.text(),
+                    "bat_4_charge_over_current" : self.bat_4_charge_over_current.text(),
+                    "bat_4_short_circuit" : self.bat_4_short_circuit.text(),
+                    "bat_4_discharge_over_temp" : self.bat_4_discharge_over_temp.text(),
+                    "bat_4_discharge_under_temp" : self.bat_4_discharge_under_temp.text(),
+                    "bat_4_charge_over_temp" : self.bat_4_charge_over_temp.text(),
+                    "bat_4_charge_under_temp" : self.bat_4_charge_under_temp.text(),
+                    "bat_4_under_voltage" : self.bat_4_under_voltage.text(),
+                    "bat_4_over_voltage" : self.bat_4_over_voltage.text(),
+                    "bat_4_over_discharge_capacity" : self.bat_4_over_discharge_capacity.text(),
+                    "bat_4_imbalance" : self.bat_4_imbalance.text(),
+                    "bat_4_system_failure" : self.bat_4_system_failure.text(),
+                    "bat_4_charger_state" : self.bat_4_charger_state.text(),
+                    "bat_4_discharge_state" : self.bat_4_discharge_state.text(),
+                    "bat_4_sleep_state" : self.bat_4_sleep_state.text()
+
+                    "bat_5_voltage" : self.bat_5_voltage.text(),
+                    "bat_5_current" : self.bat_5_current.text(),
+                    "bat_5_soc" : self.bat_5_soc.text(),
+                    "bat_5_temp" : self.bat_5_temp.text(),
+                    "bat_5_capacity" : self.bat_5_capacity.text(),
+                    "bat_5_soh" : self.bat_5_soh.text(),
+                    "bat_5_cycle" : self.bat_5_cycle.text(),
+                    "bat_5_discharge_over_current" : self.bat_5_discharge_over_current.text(),
+                    "bat_5_charge_over_current" : self.bat_5_charge_over_current.text(),
+                    "bat_5_short_circuit" : self.bat_5_short_circuit.text(),
+                    "bat_5_discharge_over_temp" : self.bat_5_discharge_over_temp.text(),
+                    "bat_5_discharge_under_temp" : self.bat_5_discharge_under_temp.text(),
+                    "bat_5_charge_over_temp" : self.bat_5_charge_over_temp.text(),
+                    "bat_5_charge_under_temp" : self.bat_5_charge_under_temp.text(),
+                    "bat_5_under_voltage" : self.bat_5_under_voltage.text(),
+                    "bat_5_over_voltage" : self.bat_5_over_voltage.text(),
+                    "bat_5_over_discharge_capacity" : self.bat_5_over_discharge_capacity.text(),
+                    "bat_5_imbalance" : self.bat_5_imbalance.text(),
+                    "bat_5_system_failure" : self.bat_5_system_failure.text(),
+                    "bat_5_charger_state" : self.bat_5_charger_state.text(),
+                    "bat_5_discharge_state" : self.bat_5_discharge_state.text(),
+                    "bat_5_sleep_state" : self.bat_5_sleep_state.text()
+
+                    "bat_6_voltage" : self.bat_6_voltage.text(),
+                    "bat_6_current" : self.bat_6_current.text(),
+                    "bat_6_soc" : self.bat_6_soc.text(),
+                    "bat_6_temp" : self.bat_6_temp.text(),
+                    "bat_6_capacity" : self.bat_6_capacity.text(),
+                    "bat_6_soh" : self.bat_6_soh.text(),
+                    "bat_6_cycle" : self.bat_6_cycle.text(),
+                    "bat_6_discharge_over_current" : self.bat_6_discharge_over_current.text(),
+                    "bat_6_charge_over_current" : self.bat_6_charge_over_current.text(),
+                    "bat_6_short_circuit" : self.bat_6_short_circuit.text(),
+                    "bat_6_discharge_over_temp" : self.bat_6_discharge_over_temp.text(),
+                    "bat_6_discharge_under_temp" : self.bat_6_discharge_under_temp.text(),
+                    "bat_6_charge_over_temp" : self.bat_6_charge_over_temp.text(),
+                    "bat_6_charge_under_temp" : self.bat_6_charge_under_temp.text(),
+                    "bat_6_under_voltage" : self.bat_6_under_voltage.text(),
+                    "bat_6_over_voltage" : self.bat_6_over_voltage.text(),
+                    "bat_6_over_discharge_capacity" : self.bat_6_over_discharge_capacity.text(),
+                    "bat_6_imbalance" : self.bat_6_imbalance.text(),
+                    "bat_6_system_failure" : self.bat_6_system_failure.text(),
+                    "bat_6_charger_state" : self.bat_6_charger_state.text(),
+                    "bat_6_discharge_state" : self.bat_6_discharge_state.text(),
+                    "bat_6_sleep_state" : self.bat_6_sleep_state.text()
+
+                    "bat_7_voltage" : self.bat_7_voltage.text(),
+                    "bat_7_current" : self.bat_7_current.text(),
+                    "bat_7_soc" : self.bat_7_soc.text(),
+                    "bat_7_temp" : self.bat_7_temp.text(),
+                    "bat_7_capacity" : self.bat_7_capacity.text(),
+                    "bat_7_soh" : self.bat_7_soh.text(),
+                    "bat_7_cycle" : self.bat_7_cycle.text(),
+                    "bat_7_discharge_over_current" : self.bat_7_discharge_over_current.text(),
+                    "bat_7_charge_over_current" : self.bat_7_charge_over_current.text(),
+                    "bat_7_short_circuit" : self.bat_7_short_circuit.text(),
+                    "bat_7_discharge_over_temp" : self.bat_7_discharge_over_temp.text(),
+                    "bat_7_discharge_under_temp" : self.bat_7_discharge_under_temp.text(),
+                    "bat_7_charge_over_temp" : self.bat_7_charge_over_temp.text(),
+                    "bat_7_charge_under_temp" : self.bat_7_charge_under_temp.text(),
+                    "bat_7_under_voltage" : self.bat_7_under_voltage.text(),
+                    "bat_7_over_voltage" : self.bat_7_over_voltage.text(),
+                    "bat_7_over_discharge_capacity" : self.bat_7_over_discharge_capacity.text(),
+                    "bat_7_imbalance" : self.bat_7_imbalance.text(),
+                    "bat_7_system_failure" : self.bat_7_system_failure.text(),
+                    "bat_7_charger_state" : self.bat_7_charger_state.text(),
+                    "bat_7_discharge_state" : self.bat_7_discharge_state.text(),
+                    "bat_7_sleep_state" : self.bat_7_sleep_state.text()
+
+                    "bat_8_voltage" : self.bat_8_voltage.text(),
+                    "bat_8_current" : self.bat_8_current.text(),
+                    "bat_8_soc" : self.bat_8_soc.text(),
+                    "bat_8_temp" : self.bat_8_temp.text(),
+                    "bat_8_capacity" : self.bat_8_capacity.text(),
+                    "bat_8_soh" : self.bat_8_soh.text(),
+                    "bat_8_cycle" : self.bat_8_cycle.text(),
+                    "bat_8_discharge_over_current" : self.bat_8_discharge_over_current.text(),
+                    "bat_8_charge_over_current" : self.bat_8_charge_over_current.text(),
+                    "bat_8_short_circuit" : self.bat_8_short_circuit.text(),
+                    "bat_8_discharge_over_temp" : self.bat_8_discharge_over_temp.text(),
+                    "bat_8_discharge_under_temp" : self.bat_8_discharge_under_temp.text(),
+                    "bat_8_charge_over_temp" : self.bat_8_charge_over_temp.text(),
+                    "bat_8_charge_under_temp" : self.bat_8_charge_under_temp.text(),
+                    "bat_8_under_voltage" : self.bat_8_under_voltage.text(),
+                    "bat_8_over_voltage" : self.bat_8_over_voltage.text(),
+                    "bat_8_over_discharge_capacity" : self.bat_8_over_discharge_capacity.text(),
+                    "bat_8_imbalance" : self.bat_8_imbalance.text(),
+                    "bat_8_system_failure" : self.bat_8_system_failure.text(),
+                    "bat_8_charger_state" : self.bat_8_charger_state.text(),
+                    "bat_8_discharge_state" : self.bat_8_discharge_state.text(),
+                    "bat_8_sleep_state" : self.bat_8_sleep_state.text()
+                }
+                
+                self.brokers_out = json.dumps(self.buff)
+                self.client.publish(MQTT_TOPIC, self.brokers_out)
+                #self.client.subscribe(MQTT_TOPIC)
+        except:
+            self.status_connect.setText("send data failure")
+    '''
 
     def canConnect(self):           ##try to parse data
         try:
@@ -1078,8 +1287,9 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             
             while True:
                 self.msg = self.bus.recv() 
-
+                
                 self.buff = {
+                    "bat_1_id" : ""
                     "bat_1_voltage" : self.bat_1_voltage.text(),
                     "bat_1_current" : self.bat_1_current.text(),
                     "bat_1_soc" : self.bat_1_soc.text(),
@@ -1269,7 +1479,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                 self.brokers_out = json.dumps(self.buff)
                 self.client.publish(MQTT_TOPIC, self.brokers_out)
                 #self.client.subscribe(MQTT_TOPIC)
-
+                
                 ## THE ARBITRATION_ID MAY CHANGE WHEN TRYING ON REAL BMS
                 if self.msg.arbitration_id == 0xB0FFFFF:
                     self.BAT_1_VOLTAGE.emit(str(frameparse(self.msg, "bat_voltage")))
