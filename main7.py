@@ -1,5 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication,QDialog,QLabel
+#from PyQt5.QtWidgets import QApplication,QDialog,
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 import sys
 import interface
 from PyQt5.QtCore import QTimer
@@ -15,19 +18,18 @@ CHANNEL = "can0"
 
 MQTT_HOST = "broker.hivemq.com"
 MQTT_PORT = 1883
-DBtime = 30
-CanTime = 2
 MQTT_KEEPALIVE_INTERVAL = 60
 MQTT_TOPIC = "mqtt/subscribe"
+DBtime = 60                         #waktu kirim data -> database (seconds)
+CanTime = 2                         #waktu kirim data can (seconds)
 
+
+loadData = [0, 0, 0, 0, 0, 0, 0, 0]
 class MainClass(QDialog, interface.Ui_MainWindow):
     
-    loadData = [0, 0, 0, 0, 0, 0, 0, 0]
-    GFLAG = 0
-
     BAT_1_HOLE_ID = QtCore.pyqtSignal(int)
     BAT_1_FAULT_CODE = QtCore.pyqtSignal(int)
-    BAT_1_HANDSHACKING = QtCore.pyqtSignal(int)
+    BAT_1_HANDSHAKING = QtCore.pyqtSignal(int)
     BAT_1_VOLTAGE = QtCore.pyqtSignal(str)
     BAT_1_CURRENT = QtCore.pyqtSignal(str)
     BAT_1_SOC = QtCore.pyqtSignal(str)
@@ -45,16 +47,20 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     BAT_2_SOH = QtCore.pyqtSignal(str)
     BAT_2_CYCLE = QtCore.pyqtSignal(str)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent = None):
+        super(MainClass, self).__init__(parent)
+        
+        self.cansend = CanSend()
+        self.working2 = Tworking2()
+
         self.i = 0
         self.val = 1
         self.setupUi(self)
-        self.bat_1_handshacking_status = 0
-
+        self.bat_1_handshaking_status = 0
+        self.bat_1_ChargeFLAG = 0
         self.BAT_1_HOLE_ID.connect(self.bat_1_hole_id_handle)
         self.BAT_1_FAULT_CODE.connect(self.bat_1_fault_code_handle)
-        self.BAT_1_HANDSHACKING.connect(self.bat_1_handshacking_handle)
+        self.BAT_1_HANDSHAKING.connect(self.bat_1_handshaking_handle)
         self.BAT_1_VOLTAGE.connect(self.bat_1_voltage_handle)
         self.BAT_1_CURRENT.connect(self.bat_1_current_handle)
         self.BAT_1_SOC.connect(self.bat_1_soc_handle)
@@ -63,6 +69,8 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.BAT_1_SOH.connect(self.bat_1_soh_handle)
         self.BAT_1_CYCLE.connect(self.bat_1_cycle_handle)
 
+        self.bat_2_handshaking_status = 0
+        self.bat_2_ChargeFLAG = 0
         self.BAT_2_VOLTAGE.connect(self.bat_2_voltage_handle)
         self.BAT_2_CURRENT.connect(self.bat_2_current_handle)
         self.BAT_2_SOC.connect(self.bat_2_soc_handle)
@@ -73,6 +81,9 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 
         self.button_connect.clicked.connect(self.canConnect)
         self.button_disconnect.clicked.connect(self.button_disconnect_handle)
+        self.bat_swap.clicked.connect(self.bat_swap_handle)
+        #self.connect(self.bat_swap, SIGNAL("clicked()"), self.bat_swap_handle)
+
         self.bat_1_button_start.clicked.connect(self.bat_1_button_start_handle)
         self.bat_1_button_stop.clicked.connect(self.bat_1_button_stop_handle)
         self.bat_2_button_start.clicked.connect(self.bat_2_button_start_handle)
@@ -107,18 +118,25 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 
         self.l = QtGui.QPalette(self.palette())
         self.l.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.red))
+        self.c = QtGui.QPalette(self.palette())
+        self.c.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.yellow))
         self.p = QtGui.QPalette()
         self.brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
         self.p.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, self.brush)
+        '''
         self.brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
         self.p.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, self.brush)
         self.brush = QtGui.QBrush(QtGui.QColor(240, 240, 240))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
         self.p.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, self.brush)
-    
+        '''
+        #self.cansend.obj.connect(self.sendcan_handle)
+        
     ## every handle method below affected by every single canbus signal transmit
+  
+    #BATT 1 VARIABLE
     def bat_1_hole_id_handle(self, value):
         self.hole_1_msg_1 = 0xB0 << 20 | value
         self.hole_1_msg_2 = 0xB1 << 20 | value
@@ -460,8 +478,8 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.bat_1_charge_lost_com.setText("0")              
 
         QtWidgets.QApplication.processEvents() 
-    def bat_1_handshacking_handle(self, value):
-        self.bat_1_handshacking_status = value        
+    def bat_1_handshaking_handle(self, value):
+        self.bat_1_handshaking_status = value        
         QtWidgets.QApplication.processEvents()
     def bat_1_voltage_handle(self, value): 
         self.bat_1_voltage.setText(value)   
@@ -475,7 +493,10 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_1_soc.setText(value)
         self.soc_1.setText(value)
         self.progressBar.setValue(int(value))
-        self.progressBar.setPalette(self.l) if self.progressBar.value() <= 20 else self.progressBar.setPalette(self.p)
+        if self.bat_1_ChargeFLAG == 0:
+            self.progressBar.setPalette(self.l) if self.progressBar.value() <= 20 else self.progressBar.setPalette(self.p)
+        else:
+            self.progressBar.setPalette(self.c)
         QtWidgets.QApplication.processEvents()
     def bat_1_temp_handle(self, value):
         self.bat_1_temp.setText(value)
@@ -490,7 +511,8 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     def bat_1_cycle_handle(self, value):
         self.bat_1_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
-   
+    
+    #BAT 2 VARIABLE
     def bat_2_voltage_handle(self, value):       
         self.bat_2_voltage.setText(value)   
         self.voltage_2.setText(value)       
@@ -502,7 +524,10 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_2_soc.setText(value)
         self.soc_2.setText(value)
         self.progressBar_2.setValue(int(value))
-        self.progressBar_2.setPalette(self.l) if self.progressBar_2.value() <= 20 else self.progressBar_2.setPalette(self.p)
+        if self.bat_2_ChargeFLAG == 0:
+            self.progressBar_2.setPalette(self.l) if self.progressBar_2.value() <= 20 else self.progressBar_2.setPalette(self.p)
+        else:
+            self.progressBar_2.setPalette(self.c)
         QtWidgets.QApplication.processEvents()
     def bat_2_temp_handle(self, value):
         self.bat_2_temp.setText(value)
@@ -517,68 +542,65 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     def bat_2_cycle_handle(self, value):
         self.bat_2_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
-        
-    def bat_1_button_start_handle(self):
-        try:
+
+    #START STOP FUNCTION    
+    def bat_1_button_start_handle(self):        
+        self.loadData.pop(0)
+        self.loadData.insert(0,1)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+        if (self.bus.send(self.sendmsg) == True):
+            self.bat_1_ChargeFLAG = 1
             self.bat_1_button_start.setEnabled(False)
-           
-            self.bat_1_button_stop.setEnabled(True)
-            self.loadData.pop(0)
-            self.loadData.insert(0,1)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
-            self.bus.send(self.sendmsg)
-            self.charging_status.setText("Hole 1 charging started")    
-        except:
-            self.bat_1_button_start.setEnabled(True)
-            self.charging_status.setText("Hole 1 charging starting failed")
+            self.bat_1_button_stop.setEnabled(True)  
 
     def bat_1_button_stop_handle(self):    
-        try:
+        self.bat_1_button_stop.setEnabled(False)
+        self.loadData.pop(0)
+        self.loadData.insert(0,0)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+        if (self.bus.send(self.sendmsg) == True):
+            self.bat_1_ChargeFLAG = 0
+            self.bat_1_button_start.setEnabled(True)
             self.bat_1_button_stop.setEnabled(False)
-            self.loadData.pop(0)
-            self.loadData.insert(0,0)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
-            self.bus.send(self.sendmsg)
-            self.charging_status.setText("Hole 1 charging stopped")
-        except:
-            self.bat_1_button_stop.setEnabled(True) 
-            self.charging_status.setText("Hole 1 charging failed to stop")    
 
     def bat_2_button_start_handle(self):
-        try:
+        self.loadData.pop(1)
+        self.loadData.insert(1,1)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
+        if (self.bus.send(self.sendmsg) == True):
+            self.bat_2_ChargeFLAG = 1
             self.bat_2_button_start.setEnabled(False)
             self.bat_2_button_stop.setEnabled(True)
-            self.loadData.pop(1)
-            self.loadData.insert(1,1)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
-            self.bus.send(self.sendmsg)
-            self.charging_status.setText("Hole 2 charging started")
-        except:
-            self.charging_status.setText("Hole 2 charging starting failed")
-
+        
     def bat_2_button_stop_handle(self):
-        try:
+        self.loadData.pop(1)
+        self.loadData.insert(1,0)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
+        if (self.bus.send(self.sendmsg) == True):    
+            self.bat_2_ChargeFLAG = 0
+            self.bat_2_button_start.setEnabled(True)
             self.bat_2_button_stop.setEnabled(False)
-            self.loadData.pop(1)
-            self.loadData.insert(1,0)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
-            self.bus.send(self.sendmsg)
-            self.charging_status.setText("Hole 2 charging stopped")
-        except:
-            self.charging_status.setText("Hole 2 charging failed to stop")    
 
-    def mqtt_connect(self, client, userdata, flags, rc):
-        self.status_connect.setText("Connected with result code " + str(rc))
-        print("Connected with result code " + str(rc))
-
+    ##SWAP FUNCTION
+    def bat_swap_handle(self):
+        #self.cansend.start()
+        self.working2.start()
+        j = 0
+        soc = [float(self.bat_1_soc.text()), float(self.bat_2_soc.text()), 100, 50, 30, 40, 105] 
+        for i in range(0, (len(soc) - 1)):
+            #print("i = {}".format(i))
+            #print("j = {}".format(j))
+            if soc[j] < soc[i+1]:
+                j = i + 1
+            
+        self.bat_swap.setText(str(soc[j]))
+    
+    ##BUTTON CONNECTION
     def button_disconnect_handle(self):
         try: 
-            os.system("sudo ip link set {} down".format(CHANNEL))
-            self.status_connect.setText("Canbus disconnected")
-            self.button_connect.setEnabled(True)
-            self.button_disconnect.setEnabled(False)
-            
             self.loadData = [0, 0, 0, 0, 0, 0, 0, 0]
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+
             self.BAT_1_VOLTAGE.emit("0")
             self.BAT_1_CURRENT.emit("0")
             self.BAT_1_SOC.emit("0")
@@ -589,38 +611,74 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.bat_1_id_1.setText("")
             self.err_code_1.setText("0")
             self.BAT_1_FAULT_CODE.emit(0)
-        
+
+            self.status_1.setEnabled(False)
+            self.status_2.setEnabled(False)
+            self.status_3.setEnabled(False)
+            self.status_4.setEnabled(False)
+            self.status_5.setEnabled(False)
+            self.status_6.setEnabled(False)
+            self.status_7.setEnabled(False)
+            self.status_8.setEnabled(False)
+            
+            if(self.bus.send(self.sendmsg) == True):
+                if(os.system("sudo ip link set {} down".format(CHANNEL)) == True):
+
+                    self.status_connect.setText("Canbus disconnected")
+
+                    self.button_connect.setEnabled(True)
+                    self.button_disconnect.setEnabled(False)
+                else:
+                    self.status_connect.setText("Canbus disconnecting failed")
+            else:
+                self.status_connect.setText("Canbus send message failed")
+            
         except:
             self.status_connect.setText("Canbus disconnecting failed")
 
     def canConnect(self):           ##try to parse data
         try:
-            self.status_connect.setText("Canbus initiating success")
-            flagDB = 0
-            flagCAN = 0
-            self.flagServ = 0
-            tic = time.perf_counter()
-            os.system("sudo ip link set {} up type can bitrate {}".format(CHANNEL, BITRATE))
-            self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
-            self.button_connect.setEnabled(False)
-            self.button_disconnect.setEnabled(True)
-            
+            if(os.system("sudo ip link set {} up type can bitrate {}".format(CHANNEL, BITRATE)) == True):
+                self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
+                #self.cansend.start()
+                self.button_connect.setEnabled(False)
+                self.button_disconnect.setEnabled(True)
+                self.bat_1_button_start.setEnabled(True)
+                self.status_connect.setText("Canbus initiating success")
+
+                bat_1_encript = 0
+                flagDB = 0
+                #flagCAN = 0
+                self.flagServ = 0
+                tic = time.perf_counter()
+                
+                self.status_1.setEnabled(True)
+                self.status_2.setEnabled(True)
+                self.status_3.setEnabled(True)
+                self.status_4.setEnabled(True)
+                self.status_5.setEnabled(True)
+                self.status_6.setEnabled(True)
+                self.status_7.setEnabled(True)
+                self.status_8.setEnabled(True)
+            else:
+                self.status_connect.setText("Canbus initiating failed")
+
             while True:
                 self.msg = self.bus.recv()
                 toc = time.perf_counter()
                 timm = toc - tic
-                SendCanTime = "".join("{:0.2f}".format(timm % CanTime))
+                #SendCanTime = "".join("{:0.2f}".format(timm % CanTime))
                 SendDbTime = "".join("{:0.2f}".format(timm % DBtime))
                
                 ## THE ARBITRATION_ID MAY CHANGE WHEN TRYING ON REAL BMS
                 if self.msg.arbitration_id == 0x0C1:
-                    self.bat_1_button_start.setEnabled(True)
-                    self.BAT_1_HOLE_ID.emit(int(frameparse(self.msg, "bat_id")))          
+                    self.BAT_1_HOLE_ID.emit(int(frameparse(self.msg, "bat_id")))
                     self.BAT_1_FAULT_CODE.emit(frameparse(self.msg, "fault_code"))
-                    self.BAT_1_HANDSHACKING.emit(int(frameparse(self.msg, "handshaking")))
+                    self.BAT_1_HANDSHAKING.emit(int(frameparse(self.msg, "handshaking")))
                 
-                if self.bat_1_handshacking_status == 1:
-                    self.charging_status.setText("Hole 1 Connection success")
+                if self.bat_1_handshaking_status == 1:
+                    self.status_1.setPalette(self.p)
+                    add_1 = ("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},0,0,0,0,0,0,0,0").format(self.bat_1_id.text() , self.bat_1_voltage.text(), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_charge.text(), self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_batt_over_current.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_batt_short_circuit.text(), self.bat_1_batt_system_failure.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_charge_out_over_voltage.text(), self.bat_1_charge_over_temp.text(), self.bat_1_charge_under_temp.text(), self.bat_1_charge_short_circuit.text(), self.bat_1_charge_over_current.text(), self.bat_1_charge_in_over_voltage.text(), self.bat_1_charge_in_under_voltage.text(), self.bat_1_charge_lost_com.text())
                     if self.msg.arbitration_id == self.hole_1_msg_1:
                         self.BAT_1_VOLTAGE.emit(str(frameparse(self.msg, "bat_voltage")))
                         self.BAT_1_CURRENT.emit(str(frameparse(self.msg, "bat_current")))
@@ -631,7 +689,9 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                         self.BAT_1_CAPACITY.emit(str(frameparse(self.msg, "bat_capacity")))
                         self.BAT_1_SOH.emit(str(frameparse(self.msg, "bat_soh")))
                         self.BAT_1_CYCLE.emit(str(frameparse(self.msg, "bat_cycle")))
+
                 else:
+                    self.status_1.setPalette(self.p)
                     self.BAT_1_VOLTAGE.emit("0")
                     self.BAT_1_CURRENT.emit("0")
                     self.BAT_1_SOC.emit("0")
@@ -641,28 +701,18 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                     self.BAT_1_CYCLE.emit("0")
                     self.BAT_1_FAULT_CODE.emit(0)
 
-                if (float(SendDbTime) > 0) & (float(SendDbTime) < 1):
+                if (float(SendDbTime) > 0) & (float(SendDbTime) < 1):           #modulus tidak selalu tepat(dihitung selisih dengan waktu eksekusi baris progam lainnya)
                     flagDB = flagDB + 1
                     if flagDB == 1:
-                        #print("xxx")
-                        #url = ("http://charging.genmotorcycles.com/index.php?bat_id=b0ffff2&volt=50&curr=4&soc=0&temp=0&capc=0&soh=0&cycle=0&B_over_charge=0&B_over_temp=0&B_under_temp=0&B_over_curr=0&B_over_volt=0&B_short_cirr=0&B_sys_failure=0&C_out_u_volt=0&C_out_o_volt=0&C_over_temp=0&C_under_temp=0&C_short_cirr=0&C_over_curr=0&C_in_o_voltage=0&C_in_u_voltage=0&C_lost_conn=0&doc=0&dot=0&dut=0&odc=0&imb=0&cs=0&ds=0&ss=0")
-                        #print("{}".format(self.bat_1_id.text()))
-                        url = ("http://charging.genmotorcycles.com/index.php?bat_id={}&volt={}&curr={}&soc={}&temp={}&capc={}&soh={}&cycle={}&B_over_charge={}&B_over_temp={}&B_under_temp={}&B_over_curr={}&B_over_volt={}&B_short_cirr={}&B_sys_failure={}&C_out_u_volt={}&C_out_o_volt={}&C_over_temp={}&C_under_temp={}&C_short_cirr={}&C_over_curr={}&C_in_o_voltage={}&C_in_u_voltage={}&C_lost_conn={}&doc=0&dot=0&dut=0&odc=0&imb=0&cs=0&ds=0&ss=0").format(self.bat_1_id.text() , self.bat_1_voltage.text(), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_charge.text(), self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_batt_over_current.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_batt_short_circuit.text(), self.bat_1_batt_system_failure.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_charge_out_over_voltage.text(), self.bat_1_charge_over_temp.text(), self.bat_1_charge_under_temp.text(), self.bat_1_charge_short_circuit.text(), self.bat_1_charge_over_current.text(), self.bat_1_charge_in_over_voltage.text(), self.bat_1_charge_in_under_voltage.text(), self.bat_1_charge_lost_com.text())
+                        for x in add_1:
+                            i = ord(x) + 2
+                            bat_1_encript = bat_1_encript + chr(i)
+                        url = ("http://charging.genmotorcycles.com/index.php?x=")
+                        url = url + bat_1_encript
                         webUrl = urllib.request.urlopen(url)
                         print("result code " + str(webUrl.getcode()))
                 else:
                     flagDB = 0
-                
-                #print(float(SendCanTime))    
-                if (float(SendCanTime) > 0.0) & (float(SendCanTime) < 1.0):
-                    flagCAN = flagCAN + 1
-                    #print(flagCAN)
-                    if flagCAN == 1:
-                        #print("xxx")       
-                        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
-                        self.bus.send(self.sendmsg) 
-                else:
-                    flagCAN = 0
                 
         except:
             self.status_connect.setText("Canbus initiating failed")
@@ -738,13 +788,31 @@ def frameparse(frame, type):
         formatted_data = "".join(bolformat.format(frame.data[i])for i in range (6, 8))
         return formatted_data
 
+class CanSend(QtCore.QThread, interface.Ui_MainWindow):
+    obj = QtCore.pyqtSignal(int)
+    sendmsg = can.Message(arbitration_id=0x1C0, data = loadData, is_extended_id=False)
+    def run(self):
+        self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
+        while True:
+            time.sleep(2)
+            #print("iso")
+            self.bus.send(self.sendmsg)
+
+class Tworking2(QtCore.QThread):
+    def run(self):
+        while True:
+            time.sleep(1)
+            print("fdsas")
+
 if __name__ == "__main__":
     window = QApplication(sys.argv)
     ui = MainClass()
+    ab = Tworking2()
     ui.showFullScreen()
-    window.exec_()
-
+    window.exec_() 
     '''
-    V    1. ngirim data nang database / menit gawe timer
-    3. develop multithread / timer
+    1. enkripsi data, tiap hole
+    2. Algoritma Button swap
+    V3. Handshaking new design
+    4. multithreading
     '''

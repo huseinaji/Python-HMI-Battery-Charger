@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="newPrefix">
-    <file>GEN.png</file>
-    <file>GEN2.png</file>
+    <file>GEN-Indonesia.png</file>
+    <file>GEN-Motor.png</file>
+    <file>GEN MOTORCYCLE.png</file>
   </qresource>
 </RCC>

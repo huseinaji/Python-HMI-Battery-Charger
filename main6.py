@@ -15,19 +15,19 @@ CHANNEL = "can0"
 
 MQTT_HOST = "broker.hivemq.com"
 MQTT_PORT = 1883
-DBtime = 10
-CanTime = 1
 MQTT_KEEPALIVE_INTERVAL = 60
 MQTT_TOPIC = "mqtt/subscribe"
+DBtime = 60                         #waktu kirim data -> database (seconds)
+CanTime = 2                         #waktu kirim data can (seconds)
+
 
 class MainClass(QDialog, interface.Ui_MainWindow):
     
-    loadData = [0, 0, 0, 0]
-    ProtectionStatus = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-
+    loadData = [0, 0, 0, 0, 0, 0, 0, 0]
+    
     BAT_1_HOLE_ID = QtCore.pyqtSignal(int)
     BAT_1_FAULT_CODE = QtCore.pyqtSignal(int)
-    BAT_1_HANDSHACKING = QtCore.pyqtSignal(int)
+    BAT_1_HANDSHAKING = QtCore.pyqtSignal(int)
     BAT_1_VOLTAGE = QtCore.pyqtSignal(str)
     BAT_1_CURRENT = QtCore.pyqtSignal(str)
     BAT_1_SOC = QtCore.pyqtSignal(str)
@@ -37,8 +37,6 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     BAT_1_CYCLE = QtCore.pyqtSignal(str)
 
     BAT_2_HOLE_ID = QtCore.pyqtSignal(int)
-    BAT_2_FAULT_CODE = QtCore.pyqtSignal(int)
-    BAT_2_HANDSHACKING = QtCore.pyqtSignal(int)
     BAT_2_VOLTAGE = QtCore.pyqtSignal(str)
     BAT_2_CURRENT = QtCore.pyqtSignal(str)
     BAT_2_SOC = QtCore.pyqtSignal(str)
@@ -49,14 +47,14 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
-        self.i = 0
+        
         self.val = 1
         self.setupUi(self)
-        self.handshacking_1_status = 0
-
+        self.bat_1_handshaking_status = 0
+        self.bat_1_ChargeFLAG = 0
         self.BAT_1_HOLE_ID.connect(self.bat_1_hole_id_handle)
         self.BAT_1_FAULT_CODE.connect(self.bat_1_fault_code_handle)
-        self.BAT_1_HANDSHACKING.connect(self.bat_1_handshacking_handle)
+        self.BAT_1_HANDSHAKING.connect(self.bat_1_handshaking_handle)
         self.BAT_1_VOLTAGE.connect(self.bat_1_voltage_handle)
         self.BAT_1_CURRENT.connect(self.bat_1_current_handle)
         self.BAT_1_SOC.connect(self.bat_1_soc_handle)
@@ -65,6 +63,8 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.BAT_1_SOH.connect(self.bat_1_soh_handle)
         self.BAT_1_CYCLE.connect(self.bat_1_cycle_handle)
 
+        self.bat_2_handshaking_status = 0
+        self.bat_2_ChargeFLAG = 0
         self.BAT_2_VOLTAGE.connect(self.bat_2_voltage_handle)
         self.BAT_2_CURRENT.connect(self.bat_2_current_handle)
         self.BAT_2_SOC.connect(self.bat_2_soc_handle)
@@ -73,14 +73,18 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.BAT_2_SOH.connect(self.bat_2_soh_handle)
         self.BAT_2_CYCLE.connect(self.bat_2_cycle_handle)
 
+        #MAIN BUTTON
         self.button_connect.clicked.connect(self.canConnect)
         self.button_disconnect.clicked.connect(self.button_disconnect_handle)
-        self.button_send_data.clicked.connect(self.button_send_data_handle)
+        self.bat_swap.clicked.connect(self.bat_swap_handle)
+
+        #BUTTON START STOP
         self.bat_1_button_start.clicked.connect(self.bat_1_button_start_handle)
         self.bat_1_button_stop.clicked.connect(self.bat_1_button_stop_handle)
         self.bat_2_button_start.clicked.connect(self.bat_2_button_start_handle)
         self.bat_2_button_stop.clicked.connect(self.bat_2_button_stop_handle)
 
+        #BUTTON BACK
         self.pushButton_2.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_3.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.pushButton_4.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
@@ -110,18 +114,19 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 
         self.l = QtGui.QPalette(self.palette())
         self.l.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.red))
+        self.c = QtGui.QPalette(self.palette())
+        self.brush = QtGui.QBrush(QtGui.QColor(243,243,0))
+        self.brush.setStyle(QtCore.Qt.SolidPattern)
+        self.c.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, self.brush)
+        #self.c.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.yellow))
         self.p = QtGui.QPalette()
         self.brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
         self.p.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, self.brush)
-        self.brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
-        self.brush.setStyle(QtCore.Qt.SolidPattern)
-        self.p.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Highlight, self.brush)
-        self.brush = QtGui.QBrush(QtGui.QColor(240, 240, 240))
-        self.brush.setStyle(QtCore.Qt.SolidPattern)
-        self.p.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Highlight, self.brush)
+       
     
     ## every handle method below affected by every single canbus signal transmit
+    #BATT 1 VARIABLE
     def bat_1_hole_id_handle(self, value):
         self.hole_1_msg_1 = 0xB0 << 20 | value
         self.hole_1_msg_2 = 0xB1 << 20 | value
@@ -129,7 +134,6 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_1_id.setText(str(value))
         self.bat_1_id_1.setText(str(value))
         QtWidgets.QApplication.processEvents()  
-
     def bat_1_fault_code_handle(self, value):
         if value != 0:
             self.flagServ = self.flagServ + 1
@@ -137,203 +141,314 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                 url = ("http://charging.genmotorcycles.com/index.php?bat_id={}&volt={}&curr={}&soc={}&temp={}&capc={}&soh={}&cycle={}&B_over_charge={}&B_over_temp={}&B_under_temp={}&B_over_curr={}&B_over_volt={}&B_short_cirr={}&B_sys_failure={}&C_out_u_volt={}&C_out_o_volt={}&C_over_temp={}&C_under_temp={}&C_short_cirr={}&C_over_curr={}&C_in_o_voltage={}&C_in_u_voltage={}&C_lost_conn={}&doc=0&dot=0&dut=0&odc=0&imb=0&cs=0&ds=0&ss=0").format(self.bat_1_id.text() , self.bat_1_voltage.text(), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_charge.text(), self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_batt_over_current.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_batt_short_circuit.text(), self.bat_1_batt_system_failure.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_charge_out_over_voltage.text(), self.bat_1_charge_over_temp.text(), self.bat_1_charge_under_temp.text(), self.bat_1_charge_short_circuit.text(), self.bat_1_charge_over_current.text(), self.bat_1_charge_in_over_voltage.text(), self.bat_1_charge_in_under_voltage.text(), self.bat_1_charge_lost_com.text())
                 webUrl = urllib.request.urlopen(url)
                 print("result code " + str(webUrl.getcode()))
-            
+
             if value == 7:
                 self.err_code_1.setText("Over Charge")
-                self.ProtectionStatus.pop(0)
-                self.ProtectionStatus.insert(0, 1)
-                
+                self.bat_1_batt_over_charge.setText("1")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
+            
             elif value == 8:
                 self.err_code_1.setText("Batt Over Temp")
-                self.ProtectionStatus.pop(1)
-                self.ProtectionStatus.insert(1, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("1")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
                 
             elif value == 9:
                 self.err_code_1.setText("Bat Under Temp")
-                self.ProtectionStatus.pop(2)
-                self.ProtectionStatus.insert(2, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("1")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
 
             elif value == 10:
                 self.err_code_1.setText("Bat Over Current")
-                self.ProtectionStatus.pop(3)
-                self.ProtectionStatus.insert(3, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("1")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
             
             elif value == 11:
                 self.err_code_1.setText("Bat Over Volt")
-                self.ProtectionStatus.pop(4)
-                self.ProtectionStatus.insert(4, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("1")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
 
             elif value == 12:
                 self.err_code_1.setText("Bat Short Circuit")
-                self.ProtectionStatus.pop(5)
-                self.ProtectionStatus.insert(5, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("1")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
 
             elif value == 13:
                 self.err_code_1.setText("Bat Sistem Failure")
-                self.ProtectionStatus.pop(6)
-                self.ProtectionStatus.insert(6, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("1")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")
 
             elif value == 14:
                 self.err_code_1.setText("Charge Out Under Volt")
-                self.ProtectionStatus.pop(7)
-                self.ProtectionStatus.insert(7, 1)         
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("1")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")           
 
             elif value == 15:
                 self.err_code_1.setText("Charge Out Over Volt")
-                self.ProtectionStatus.pop(8)
-                self.ProtectionStatus.insert(8, 1)        
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("1")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")          
 
             elif value == 16:
                 self.err_code_1.setText("Charge Over Temp")
-                self.ProtectionStatus.pop(9)
-                self.ProtectionStatus.insert(9, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("1")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0") 
 
             elif value == 17:
                 self.err_code_1.setText("Charge Under Temp")
-                self.ProtectionStatus.pop(10)
-                self.ProtectionStatus.insert(10, 1)     
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("1")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")        
 
             elif value == 18:
                 self.err_code_1.setText("Charge Short Circuit")
-                self.ProtectionStatus.pop(11)
-                self.ProtectionStatus.insert(11, 1)         
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("1")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")           
 
             elif value == 19:
                 self.err_code_1.setText("Charge Over Current")
-                self.ProtectionStatus.pop(12)
-                self.ProtectionStatus.insert(12, 1)   
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("1")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")      
 
             elif value == 20:
                 self.err_code_1.setText("In Over Volt")
-                self.ProtectionStatus.pop(13)
-                self.ProtectionStatus.insert(13, 1)      
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("1")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("0")         
 
             elif value == 21:
                 self.err_code_1.setText("In Under Volt")
-                self.ProtectionStatus.pop(14)
-                self.ProtectionStatus.insert(14, 1)          
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("1")
+                self.bat_1_charge_lost_com.setText("0")           
 
             elif value == 22:
                 self.err_code_1.setText("Lost Communication")
-                self.ProtectionStatus.pop(15)
-                self.ProtectionStatus.insert(15, 1)
+                self.bat_1_batt_over_charge.setText("0")
+                self.bat_1_batt_over_temp.setText("0")
+                self.bat_1_batt_under_temp.setText("0")
+                self.bat_1_batt_over_current.setText("0")
+                self.bat_1_batt_over_voltage.setText("0")
+                self.bat_1_batt_short_circuit.setText("0")
+                self.bat_1_batt_system_failure.setText("0")
+                self.bat_1_charge_out_under_voltage.setText("0")
+                self.bat_1_charge_out_over_voltage.setText("0")
+                self.bat_1_charge_over_temp.setText("0")
+                self.bat_1_charge_under_temp.setText("0")
+                self.bat_1_charge_short_circuit.setText("0")
+                self.bat_1_charge_over_current.setText("0")
+                self.bat_1_charge_in_over_voltage.setText("0")
+                self.bat_1_charge_in_under_voltage.setText("0")
+                self.bat_1_charge_lost_com.setText("1")
         
-        elif value == 0:
+        else:
+            self.flagServ = 0
             self.err_code_1.setText("0")
-            self.ProtectionStatus = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-
-        QtWidgets.QApplication.processEvents() 
-
-    def bat_1_handshacking_handle(self, value):
-        self.handshacking_1_status = value
-        #print(self.handshacking_1_status)        
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_voltage_handle(self, value): 
-        self.bat_1_voltage.setText(value)   
-        self.voltage_1.setText(value)
-        #print("".format(value))      
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_current_handle(self, value):
-        self.bat_1_current.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_soc_handle(self, value):
-        self.bat_1_soc.setText(value)
-        self.soc_1.setText(value)
-        self.progressBar.setValue(int(value))
-        self.progressBar.setPalette(self.l) if self.progressBar.value() <= 20 else self.progressBar.setPalette(self.p)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_temp_handle(self, value):
-        self.bat_1_temp.setText(value)
-        self.temp_1.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_capacity_handle(self, value):
-        self.bat_1_capacity.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_soh_handle(self, value):
-        self.bat_1_soh.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_1_cycle_handle(self, value):
-        self.bat_1_cycle.setText(value)
-        QtWidgets.QApplication.processEvents()
-   
-    def bat_2_voltage_handle(self, value):       
-        self.bat_2_voltage.setText(value)   
-        self.voltage_2.setText(value)       
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_current_handle(self, value):
-        self.bat_2_current.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_soc_handle(self, value):
-        self.bat_2_soc.setText(value)
-        self.soc_2.setText(value)
-        self.progressBar_2.setValue(int(value))
-        self.progressBar_2.setPalette(self.l) if self.progressBar_2.value() <= 20 else self.progressBar_2.setPalette(self.p)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_temp_handle(self, value):
-        self.bat_2_temp.setText(value)
-        self.temp_2.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_capacity_handle(self, value):
-        self.bat_2_capacity.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_soh_handle(self, value):
-        self.bat_2_soh.setText(value)
-        QtWidgets.QApplication.processEvents()
-
-    def bat_2_cycle_handle(self, value):
-        self.bat_2_cycle.setText(value)
-        QtWidgets.QApplication.processEvents()
-   
-    def button_send_data_handle(self):
-        url = ("http://charging.genmotorcycles.com/index.php?bat_id={:x}&volt={}&curr={}&soc={}&temp={}&capc={}&soh={}&cycle={}&doc=0&coc={}&sc={}&dot=0&dut=0&cot={}&cut={}&uv={}&ov={}&odc=0&imb=0&sf={}&cs=0&ds=0&ss=0").format(self.hole_1_msg_1, self.bat_1_voltage.text(), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_current.text(),self.bat_1_batt_short_circuit, self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_system_failure.text())
-        webUrl = urllib.request.urlopen(url)
-        print("result code " + str(webUrl.getcode()))
-        
-    def bat_1_button_start_handle(self):
-        try:
-            #self.bat_1_button_start.setEnabled(False)
-            self.bat_1_button_stop.setEnabled(True)
-            self.loadData.pop(0)
-            self.loadData.insert(0, 1)
-            canSend(0x1C0, self.loadData, self.bus)
-            self.charging_status.setText("Hole 1 charging started")    
-        except:
-            self.charging_status.setText("Hole 1 charging starting failed")
-
-    def bat_1_button_stop_handle(self):    
-        try:
-            #self.bat_1_button_stop.setEnabled(False)
-            self.loadData.pop(0)
-            self.loadData.insert(0,0)
-            canSend(0x1C0, self.loadData, self.bus)
-            self.charging_status.setText("Hole 1 charging stopped")
-
-            ##reset the display value
-            self.bat_1_id.setText("0")
-            self.bat_1_id_1.setText("0")
-            self.voltage_1.setText("0")
-            self.temp_1.setText("0")
-            self.err_code_1.setText("0")
-            self.bat_1_voltage.setText("0")
-            self.bat_1_current.setText("0")
-            self.bat_1_temp.setText("0")
-            self.bat_1_soc.setText("0")
-            self.progressBar.setValue(0)
-            self.bat_1_capacity.setText("0")
-            self.bat_1_soh.setText("0")
-            self.bat_1_cycle.setText("0")
             self.bat_1_batt_over_charge.setText("0")
             self.bat_1_batt_over_temp.setText("0")
             self.bat_1_batt_under_temp.setText("0")
@@ -349,55 +464,180 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.bat_1_charge_over_current.setText("0")
             self.bat_1_charge_in_over_voltage.setText("0")
             self.bat_1_charge_in_under_voltage.setText("0")
+            self.bat_1_charge_lost_com.setText("0")              
 
+        QtWidgets.QApplication.processEvents() 
+    def bat_1_handshaking_handle(self, value):
+        self.bat_1_handshaking_status = value        
+        QtWidgets.QApplication.processEvents()
+    def bat_1_voltage_handle(self, value): 
+        self.bat_1_voltage.setText(value)   
+        self.voltage_1.setText(value)
+        #print("".format(value))      
+        QtWidgets.QApplication.processEvents()
+    def bat_1_current_handle(self, value):
+        self.bat_1_current.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_1_soc_handle(self, value):
+        self.bat_1_soc.setText(value)
+        self.soc_1.setText(value)
+        self.progressBar.setValue(int(value))
+        if self.bat_1_ChargeFLAG == 0:
+            self.progressBar.setPalette(self.l) if self.progressBar.value() <= 20 else self.progressBar.setPalette(self.p)
+        else:
+            self.progressBar.setPalette(self.c)
+        QtWidgets.QApplication.processEvents()
+    def bat_1_temp_handle(self, value):
+        self.bat_1_temp.setText(value)
+        self.temp_1.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_1_capacity_handle(self, value):
+        self.bat_1_capacity.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_1_soh_handle(self, value):
+        self.bat_1_soh.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_1_cycle_handle(self, value):
+        self.bat_1_cycle.setText(value)
+        QtWidgets.QApplication.processEvents()
+    
+    #BAT 2 VARIABLE //ONPROGRESS
+    def bat_2_voltage_handle(self, value):       
+        self.bat_2_voltage.setText(value)   
+        self.voltage_2.setText(value)       
+        QtWidgets.QApplication.processEvents()
+    def bat_2_current_handle(self, value):
+        self.bat_2_current.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_2_soc_handle(self, value):
+        self.bat_2_soc.setText(value)
+        self.soc_2.setText(value)
+        self.progressBar_2.setValue(int(value))
+        if self.bat_2_ChargeFLAG == 0:
+            self.progressBar_2.setPalette(self.l) if self.progressBar_2.value() <= 20 else self.progressBar_2.setPalette(self.p)
+        else:
+            self.progressBar_2.setPalette(self.c)
+        QtWidgets.QApplication.processEvents()
+    def bat_2_temp_handle(self, value):
+        self.bat_2_temp.setText(value)
+        self.temp_2.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_2_capacity_handle(self, value):
+        self.bat_2_capacity.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_2_soh_handle(self, value):
+        self.bat_2_soh.setText(value)
+        QtWidgets.QApplication.processEvents()
+    def bat_2_cycle_handle(self, value):
+        self.bat_2_cycle.setText(value)
+        QtWidgets.QApplication.processEvents()
+
+    #START STOP FUNCTION   
+    def bat_1_button_start_handle(self):        
+        try:
+            self.loadData.pop(0)
+            self.loadData.insert(0,1)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.bus.send(self.sendmsg)
+            self.bat_1_ChargeFLAG = 1
+            self.bat_1_button_start.setEnabled(False)
+            self.bat_1_button_stop.setEnabled(True)  
         except:
-            self.charging_status.setText("Hole 1 charging failed to stop")    
+            self.bat_1_ChargeFLAG = 0
+            self.bat_1_button_start.setEnabled(True)
+            self.bat_1_button_stop.setEnabled(False) 
+
+    def bat_1_button_stop_handle(self):
+        try:
+            self.bat_1_button_stop.setEnabled(False)
+            self.loadData.pop(0)
+            self.loadData.insert(0,0)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.bus.send(self.sendmsg)
+            self.bat_1_ChargeFLAG = 0
+            self.bat_1_button_start.setEnabled(True)
+            self.bat_1_button_stop.setEnabled(False)
+        except:
+            self.bat_1_ChargeFLAG = 1
+            self.bat_1_button_start.setEnabled(False)
+            self.bat_1_button_stop.setEnabled(True)
 
     def bat_2_button_start_handle(self):
-        try:
+        self.loadData.pop(1)
+        self.loadData.insert(1,1)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
+        if (self.bus.send(self.sendmsg) == True):
+            self.bat_2_ChargeFLAG = 1
             self.bat_2_button_start.setEnabled(False)
             self.bat_2_button_stop.setEnabled(True)
-            self.loadData.pop(2)
-            self.loadData.insert(2, 1)
-            canSend(0x1C0, self.loadData, self.bus)
-            self.charging_status.setText("Hole 2 charging started")    
-        except:
-            self.charging_status.setText("Hole 2 charging starting failed")
-
+        
     def bat_2_button_stop_handle(self):
-        try:
+        self.loadData.pop(1)
+        self.loadData.insert(1,0)
+        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id = False)
+        if (self.bus.send(self.sendmsg) == True):    
+            self.bat_2_ChargeFLAG = 0
+            self.bat_2_button_start.setEnabled(True)
             self.bat_2_button_stop.setEnabled(False)
-            self.loadData.pop(2)
-            self.loadData.insert(2,0)
-            canSend(0x1C0, self.loadData, self.bus)
-            self.charging_status.setText("Hole 2 charging stopped")
-        except:
-            self.charging_status.setText("Hole 2 charging failed to stop")    
 
-    def mqtt_connect(self, client, userdata, flags, rc):
-        self.status_connect.setText("Connected with result code " + str(rc))
-        print("Connected with result code " + str(rc))
+    ##SWAP FUNCTION
+    def bat_swap_handle(self):
+        j = 0
+        soc = [float(self.bat_1_soc.text()), float(self.bat_2_soc.text())] 
+        for i in range(0, (len(soc) - 1)):
+            #print("i = {}".format(i))
+            #print("j = {}".format(j))
+            if soc[j] < soc[i+1]:
+                j = i + 1
+            
+        self.bat_swap.setText(str(soc[j]))
 
+    ##BUTTON CONNECTION  
     def button_disconnect_handle(self):
         try: 
-            os.system("sudo ip link set {} down".format(CHANNEL))
-            self.status_connect.setText("Canbus disconnected")
+            os.system("sudo ip link set {} down".format(CHANNEL))    
             self.button_connect.setEnabled(True)
             self.button_disconnect.setEnabled(False)
+            self.loadData = [0, 0, 0, 0, 0, 0, 0, 0]
+            self.bat_1_button_start.setEnabled(False)
+
+            self.status_1.setEnabled(False)
+            self.status_2.setEnabled(False)
+            self.status_3.setEnabled(False)
+            self.status_4.setEnabled(False)
+            self.status_5.setEnabled(False)
+            self.status_6.setEnabled(False)
+            self.status_7.setEnabled(False)
+            self.status_8.setEnabled(False)
+            
         except:
             self.status_connect.setText("Canbus disconnecting failed")
+            
 
     def canConnect(self):           ##try to parse data
         try:
+            os.system("sudo ip link set {} up type can bitrate {}".format(CHANNEL, BITRATE))
+            self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
+            self.button_connect.setEnabled(False)
+            self.button_disconnect.setEnabled(True)
+            self.status_connect.setText("Canbus initiating success")
+            
+            i = 0
+            x = 0
+            encript = ""
             flagDB = 0
             flagCAN = 0
             self.flagServ = 0
             tic = time.perf_counter()
-            os.system("sudo ip link set {} up type can bitrate {}".format(CHANNEL, BITRATE))
-            self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
-            self.status_connect.setText("Canbus initiating sucess")
-            self.button_connect.setEnabled(False)
-            self.button_disconnect.setEnabled(True)
+                
+            self.status_1.setEnabled(True)
+            self.status_2.setEnabled(True)
+            self.status_3.setEnabled(True)
+            self.status_4.setEnabled(True)
+            self.status_5.setEnabled(True)
+            self.status_6.setEnabled(True)
+            self.status_7.setEnabled(True)
+            self.status_8.setEnabled(True)
             
             while True:
                 self.msg = self.bus.recv()
@@ -405,33 +645,18 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                 timm = toc - tic
                 SendCanTime = "".join("{:0.2f}".format(timm % CanTime))
                 SendDbTime = "".join("{:0.2f}".format(timm % DBtime))
-
+               
                 ## THE ARBITRATION_ID MAY CHANGE WHEN TRYING ON REAL BMS
                 if self.msg.arbitration_id == 0x0C1:
-                    self.bat_1_button_start.setEnabled(True)
+                    
                     self.BAT_1_HOLE_ID.emit(int(frameparse(self.msg, "bat_id")))          
                     self.BAT_1_FAULT_CODE.emit(frameparse(self.msg, "fault_code"))
-                    self.BAT_1_HANDSHACKING.emit(int(frameparse(self.msg, "handshaking")))
-                    
-                    self.bat_1_batt_over_charge.setText(str(self.ProtectionStatus[0]))
-                    self.bat_1_batt_over_temp.setText(str(self.ProtectionStatus[1]))
-                    self.bat_1_batt_under_temp.setText(str(self.ProtectionStatus[2]))
-                    self.bat_1_batt_over_current.setText(str(self.ProtectionStatus[3]))
-                    self.bat_1_batt_over_voltage.setText(str(self.ProtectionStatus[4]))
-                    self.bat_1_batt_short_circuit.setText(str(self.ProtectionStatus[5]))
-                    self.bat_1_batt_system_failure.setText(str(self.ProtectionStatus[6]))
-                    self.bat_1_charge_out_under_voltage.setText(str(self.ProtectionStatus[7]))
-                    self.bat_1_charge_out_over_voltage.setText(str(self.ProtectionStatus[8]))
-                    self.bat_1_charge_over_temp.setText(str(self.ProtectionStatus[9]))
-                    self.bat_1_charge_under_temp.setText(str(self.ProtectionStatus[10]))
-                    self.bat_1_charge_short_circuit.setText(str(self.ProtectionStatus[11]))
-                    self.bat_1_charge_over_current.setText(str(self.ProtectionStatus[12]))
-                    self.bat_1_charge_in_over_voltage.setText(str(self.ProtectionStatus[13]))
-                    self.bat_1_charge_in_under_voltage.setText(str(self.ProtectionStatus[14]))
-                    self.bat_1_charge_lost_com.setText(str(self.ProtectionStatus[15])) 
-                
-                if self.handshacking_1_status == 1:
-                    self.charging_status.setText("Hole 1 Connection success")
+                    self.BAT_1_HANDSHAKING.emit(int(frameparse(self.msg, "handshaking")))
+
+                if self.bat_1_handshaking_status == 1:
+                    self.status_1.setPalette(self.p)
+                    self.bat_1_button_start.setEnabled(True)
+                    add = ("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},0,0,0,0,0,0,0,0").format(self.bat_1_id.text() , float(self.bat_1_voltage.text()), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_charge.text(), self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_batt_over_current.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_batt_short_circuit.text(), self.bat_1_batt_system_failure.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_charge_out_over_voltage.text(), self.bat_1_charge_over_temp.text(), self.bat_1_charge_under_temp.text(), self.bat_1_charge_short_circuit.text(), self.bat_1_charge_over_current.text(), self.bat_1_charge_in_over_voltage.text(), self.bat_1_charge_in_under_voltage.text(), self.bat_1_charge_lost_com.text())
                     if self.msg.arbitration_id == self.hole_1_msg_1:
                         self.BAT_1_VOLTAGE.emit(str(frameparse(self.msg, "bat_voltage")))
                         self.BAT_1_CURRENT.emit(str(frameparse(self.msg, "bat_current")))
@@ -442,17 +667,32 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                         self.BAT_1_CAPACITY.emit(str(frameparse(self.msg, "bat_capacity")))
                         self.BAT_1_SOH.emit(str(frameparse(self.msg, "bat_soh")))
                         self.BAT_1_CYCLE.emit(str(frameparse(self.msg, "bat_cycle")))
+                else:
+                    self.status_1.setPalette(self.l)
+                    self.BAT_1_VOLTAGE.emit("0")
+                    self.BAT_1_CURRENT.emit("0")
+                    self.BAT_1_SOC.emit("0")
+                    self.BAT_1_TEMP.emit("0")
+                    self.BAT_1_CAPACITY.emit("0")
+                    self.BAT_1_SOH.emit("0")
+                    self.BAT_1_CYCLE.emit("0")
+                    self.BAT_1_FAULT_CODE.emit(0)
                 
-                if (float(SendDbTime) > 0) & (float(SendDbTime) < 1):
+                if (float(SendDbTime) > 0) & (float(SendDbTime) < 1):           #modulus tidak selalu tepat(dihitung selisih dengan waktu eksekusi baris progam lainnya)
                     flagDB = flagDB + 1
                     if flagDB == 1:
-                        url = ("http://charging.genmotorcycles.com/index.php?bat_id={}&volt={}&curr={}&soc={}&temp={}&capc={}&soh={}&cycle={}&B_over_charge={}&B_over_temp={}&B_under_temp={}&B_over_curr={}&B_over_volt={}&B_short_cirr={}&B_sys_failure={}&C_out_u_volt={}&C_out_o_volt={}&C_over_temp={}&C_under_temp={}&C_short_cirr={}&C_over_curr={}&C_in_o_voltage={}&C_in_u_voltage={}&C_lost_conn={}&doc=0&dot=0&dut=0&odc=0&imb=0&cs=0&ds=0&ss=0").format(self.bat_1_id.text() , self.bat_1_voltage.text(), self.bat_1_current.text(), self.bat_1_soc.text(), self.bat_1_temp.text(), self.bat_1_capacity.text(), self.bat_1_soh.text(), self.bat_1_cycle.text(), self.bat_1_batt_over_charge.text(), self.bat_1_batt_over_temp.text(), self.bat_1_batt_under_temp.text(), self.bat_1_batt_over_current.text(), self.bat_1_batt_over_voltage.text(), self.bat_1_batt_short_circuit.text(), self.bat_1_batt_system_failure.text(), self.bat_1_charge_out_under_voltage.text(), self.bat_1_charge_out_over_voltage.text(), self.bat_1_charge_over_temp.text(), self.bat_1_charge_under_temp.text(), self.bat_1_charge_short_circuit.text(), self.bat_1_charge_over_current.text(), self.bat_1_charge_in_over_voltage.text(), self.bat_1_charge_in_under_voltage.text(), self.bat_1_charge_lost_com.text())
-                        webUrl = urllib.request.urlopen(url)
-                        print("result code " + str(webUrl.getcode()))
+                        for x in add:   
+                            i = ord(x) + 2
+                            encript = encript + chr(i)
+                        url = ("http://charging.genmotorcycles.com/index.php?x=")
+                        url = url + encript
+                        print(url)
+                        #webUrl = urllib.request.urlopen(url)
+                        #print("result code " + str(webUrl.getcode()))
                 else:
                     flagDB = 0
-                
-                if (float(SendCanTime) > 0.0) & (float(SendCanTime) < 1.0):  
+                  
+                if (float(SendCanTime) > 0.0) & (float(SendCanTime) < 1.0):
                     flagCAN = flagCAN + 1
                     if flagCAN == 1:
                         self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
@@ -461,12 +701,19 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                     flagCAN = 0
                 
         except:
-            self.status_connect.setText("Canbus initiating failed")
+            self.status_connect.setText("Canbus disconnected")
+            self.BAT_1_VOLTAGE.emit("0")
+            self.BAT_1_CURRENT.emit("0")
+            self.BAT_1_SOC.emit("0")
+            self.BAT_1_TEMP.emit("0")
+            self.BAT_1_CAPACITY.emit("0")
+            self.BAT_1_SOH.emit("0")
+            self.BAT_1_CYCLE.emit("0")
+            self.bat_1_id_1.setText("")
+            self.bat_1_id.setText("")
+            self.err_code_1.setText("0")
+            self.BAT_1_FAULT_CODE.emit(0)
 
-## fungsi kirim canbus
-def canSend(ID, data, bus):
-    sendmsg = can.Message(arbitration_id=ID, data = data, is_extended_id=False)
-    bus.send(sendmsg)
 
 ## another parse method
 def frameparse(frame, type):
@@ -507,8 +754,8 @@ def frameparse(frame, type):
     elif type == "bat_soc":
         x = "".join(hexformat.format(frame.data[5]))
         x = "".join(x + hexformat.format(frame.data[4]))
-        formatted_data = int(x, 16) 
-        return formatted_data
+        formatted_data = int(x, 16) / 100 
+        return "{:4.0f}".format(formatted_data)
 
     elif type == "bat_temp":
         x = "".join(hexformat.format(frame.data[7]))
@@ -546,6 +793,8 @@ if __name__ == "__main__":
     window.exec_()
 
     '''
-    V    1. ngirim data nang database / menit gawe timer
-    V    3. develop multithread / timer
+    V1. enkripsi data
+    V2. Algoritma Button swap
+    V3. Handshaking new design
+    4. multithreading
     '''
