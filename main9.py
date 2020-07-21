@@ -1621,10 +1621,10 @@ class MainClass(QDialog, interface.Ui_MainWindow):
 class CanSend(QtCore.QThread):
     sendmsg = can.Message(arbitration_id=0x1C0, data = loadData, is_extended_id=False)
     def run(self):
-        self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
+        #self.bus = can.interface.Bus(channel = CHANNEL, bustype = 'socketcan')
         while True:
-            self.bus.send(self.sendmsg) 
-            #print("asdf")
+            #self.bus.send(self.sendmsg)
+            print("asdf")
             #print(loadData)
             time.sleep(2)
 

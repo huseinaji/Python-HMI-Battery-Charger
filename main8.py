@@ -10,7 +10,6 @@ import time
 import os
 import http.client, urllib.request
 
-
 BITRATE = 500000
 CHANNEL = "can0"
 
@@ -894,7 +893,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         try:
             self.loadData.pop(0)
             self.loadData.insert(0,1)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, extended_id=False)
             self.bus.send(self.sendmsg)
             self.bat_1_ChargeFLAG = 1
         except:
@@ -905,7 +904,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.bat_1_button_stop.setEnabled(False)
             self.loadData.pop(0)
             self.loadData.insert(0,0)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, extended_id=False)
             self.bus.send(self.sendmsg)
             self.status_1.setPalette(self.l)
             self.bat_1_ChargeFLAG = 0
@@ -916,27 +915,23 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         try:
             self.loadData.pop(1)
             self.loadData.insert(1,1)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, extended_id=False)
             self.bus.send(self.sendmsg)
-            self.bat_2_ChargeFLAG = 1
-            #self.bat_2_button_stop.setEnabled(True)  
+            self.bat_2_ChargeFLAG = 1 
         except:
             self.bat_2_ChargeFLAG = 0
-            #self.bat_2_button_stop.setEnabled(False) 
         
     def bat_2_button_stop_handle(self):
         try:
             self.bat_2_button_stop.setEnabled(False)
             self.loadData.pop(1)
             self.loadData.insert(1,0)
-            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+            self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, extended_id=False)
             self.bus.send(self.sendmsg)
             self.status_2.setPalette(self.l)
             self.bat_2_ChargeFLAG = 0
-            #self.bat_2_button_stop.setEnabled(False)
         except:
             self.bat_2_ChargeFLAG = 1
-            #self.bat_2_button_stop.setEnabled(True)
 
     ##SWAP FUNCTION
     def bat_swap_handle(self):
@@ -1007,7 +1002,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.status_6.setEnabled(True)
             self.status_7.setEnabled(True)
             self.status_8.setEnabled(True)
-            self.msg = self.bus.recv()
+            #self.msg = self.bus.recv()
 
             while True:
                 self.msg = self.bus.recv()
@@ -1099,7 +1094,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                 if (float(SendCanTime) > 0.0) & (float(SendCanTime) < 1.0):
                     self.flagCAN = self.flagCAN + 1
                     if self.flagCAN == 1:
-                        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, is_extended_id=False)
+                        self.sendmsg = can.Message(arbitration_id=0x1C0, data = self.loadData, extended_id=False)
                         self.bus.send(self.sendmsg) 
                 else:
                     self.flagCAN = 0
@@ -1229,7 +1224,8 @@ def frameparse(frame, type):
 if __name__ == "__main__":
     window = QApplication(sys.argv)
     ui = MainClass()
-    ui.showFullScreen()
+    ui.show()
+    #ui.showFullScreen()
     window.exec_()
 
     '''
