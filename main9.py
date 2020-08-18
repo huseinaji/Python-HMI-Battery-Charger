@@ -1132,15 +1132,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                     self.BAT_2_SOH.emit("0")
                     self.BAT_2_CYCLE.emit("0")
                     self.BAT_2_FAULT_CODE.emit(0)
-                '''
-                if (float(SendCanTime) > 0.0) & (float(SendCanTime) < 1.0):
-                    self.flagCAN = self.flagCAN + 1
-                    if self.flagCAN == 1:
-                        self.sendmsg = can.Message(arbitration_id=0x1C0, data = loadData, extended_id=False)
-                        bus.send(self.sendmsg) 
-                else:
-                    self.flagCAN = 0
-                '''
+            
         except:
             #self.flagconn = 0
             self.status_1.setEnabled(False)
@@ -1190,7 +1182,6 @@ class CanSend(QtCore.QThread):
                 bus.send(self.sendmsg)
             time.sleep(2)          
         
-
 def senddb(data):
     encript = ""
     for x in data:
