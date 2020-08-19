@@ -2198,7 +2198,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_5_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
 
-    def bat_2_hole_id_handle(self, value):
+    def bat_5_hole_id_handle(self, value):
         self.hole_2_msg_1 = 0xB0 << 20 | value
         self.hole_2_msg_2 = 0xB1 << 20 | value
         value = "".join("{:x}".format(value))
