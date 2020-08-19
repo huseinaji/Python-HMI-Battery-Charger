@@ -2205,7 +2205,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_2_id.setText(str(value))
         self.bat_2_id_1.setText(str(value))
         QtWidgets.QApplication.processEvents()
-    def bat_2_fault_code_handle(self, value):
+    def bat_5_fault_code_handle(self, value):
         if value != 0:
             self.bat_2_button_stop.setEnabled(True)
             self.bat_2_flagServ = self.bat_2_flagServ + 1
