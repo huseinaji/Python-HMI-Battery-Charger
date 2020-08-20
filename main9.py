@@ -788,7 +788,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
                 self.bat_2_charge_lost_com.setText("0")      
 
             elif value == 20:
-                self.err_code_.setText("In Over Volt")
+                self.err_code_2.setText("In Over Volt")
                 self.bat_2_batt_over_charge.setText("0")
                 self.bat_2_batt_over_temp.setText("0")
                 self.bat_2_batt_under_temp.setText("0")

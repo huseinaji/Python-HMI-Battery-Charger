@@ -115,6 +115,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
     
     def __init__(self):
         super().__init__()
+        self.setupUi(self)
         self.flagDB1 = 0
         self.flagDB2 = 0
         self.flagDB3 = 0
@@ -143,11 +144,9 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_8_swap = 0
 
         #thread Initial
-        self.cansend = CanSend()
-
-        #battery Initial
-        self.setupUi(self)
+        self.cansend = CanSend()       
         
+        #battery Initial
         self.bat_1_handshaking_status = 0
         self.bat_1_ChargeFLAG = 0
         self.BAT_1_HOLE_ID.connect(self.bat_1_hole_id_handle)
@@ -311,7 +310,6 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.brush = QtGui.QBrush(QtGui.QColor(243,243,0))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
         self.c.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Highlight, self.brush)
-        #self.c.setColor(QtGui.QPalette.Highlight, QtGui.QColor(QtCore.Qt.yellow))
         self.p = QtGui.QPalette()
         self.brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         self.brush.setStyle(QtCore.Qt.SolidPattern)
@@ -2214,6 +2212,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_5_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
 
+    #BAT 6 VARIABLE
     def bat_6_hole_id_handle(self, value):
         self.hole_6_msg_1 = 0xB0 << 20 | value
         self.hole_6_msg_2 = 0xB1 << 20 | value
@@ -2592,6 +2591,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_6_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
 
+    #BAT 7 VARIABLE
     def bat_7_hole_id_handle(self, value):
         self.hole_7_msg_1 = 0xB0 << 20 | value
         self.hole_7_msg_2 = 0xB1 << 20 | value
@@ -2970,6 +2970,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
         self.bat_7_cycle.setText(value)
         QtWidgets.QApplication.processEvents()
 
+    #BAT 8 VARIABLE
     def bat_8_hole_id_handle(self, value):
         self.hole_8_msg_1 = 0xB0 << 20 | value
         self.hole_8_msg_2 = 0xB1 << 20 | value
