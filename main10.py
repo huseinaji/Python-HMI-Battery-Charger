@@ -2983,7 +2983,7 @@ class MainClass(QDialog, interface.Ui_MainWindow):
             self.bat_8_button_stop.setEnabled(True)
             self.bat_8_flagServ = self.bat_8_flagServ + 1
             if self.bat_8_flagServ == 1:
-                print(senddb(self.add2))
+                print(senddb(self.add8))
 
             if value == 7:
                 self.err_code_8.setText("Over Charge")
