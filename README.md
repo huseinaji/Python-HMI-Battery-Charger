@@ -76,7 +76,7 @@ on the "/boot/config.txt" just remove "-overlays"
 
 #### MCP2515 modul cannot send or receive any message
 
-* the oscillator must set to be 8000000, not 16000000 (same as the crystal module) --> and this happened to me :((
+* the oscillator must be set to 8000000, not 16000000 (same as the crystal module) --> and this happened to me :((
 
 * interrupt pin need to set as GPIO pin
 
